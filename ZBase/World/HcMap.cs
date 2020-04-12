@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using ZBase.Common;
 using ZBase.Network;
 
@@ -14,7 +15,8 @@ namespace ZBase.World {
         public static Dictionary<string, HcMap> Maps { get; set; } // -- static list of all loaded maps.
 
         internal string Filename; // -- this maps physical location
-        //internal Classicworld CwMap; // -- this map's format loader..
+
+        // -- this map's format loader..
         internal IMapProvider MapProvider;
 
         private Stack<byte> _entityStack; // -- for entity IDs
@@ -24,11 +26,11 @@ namespace ZBase.World {
 
         // -- permissions..
         public short BuildRank, Showrank, Joinrank;
+
         // -- Portals :>
         public TeleportArray Portals { get; set; }
 
         // -- Events Generated.
-
         public event BlockchangeArgs BlockChanged;
         public event EntityEventArgs EntityCreated, EntityDestroyed;
         public event MapEventArgs Saved, Resized, MapLoaded, MapUnloaded;
@@ -45,6 +47,7 @@ namespace ZBase.World {
             // -- When creating a new map, we will always use the classic world format.
             MapProvider = new ClassicWorldMapProvider();
             MapProvider.CreateNew(size, filename, mapName);
+            Portals = new TeleportArray(MapProvider.GetSize());
 
             BuildRank = 0;
             Showrank = 0;
@@ -58,6 +61,8 @@ namespace ZBase.World {
             LoadStack();
             Loaded = true;
             _lastClient = DateTime.UtcNow;
+
+
         }
 
         /// <summary>
@@ -70,6 +75,8 @@ namespace ZBase.World {
                 MapProvider = new ClassicWorldMapProvider();
             else
                 MapProvider = new D3MapProvider();
+
+            Portals = new TeleportArray(MapProvider.GetSize());
 
             Load(filename);
             Filename = filename;
@@ -281,6 +288,14 @@ namespace ZBase.World {
         public void Load(string filename) {
             Filename = filename;
             MapProvider.Load(filename);
+            
+            if (File.Exists(Filename + "_portals.json"))
+            {
+                var teleporters =
+                    JsonConvert.DeserializeObject<List<Teleporter>>(File.ReadAllText(Filename + "_portals.json"));
+                Portals = new TeleportArray(teleporters, MapProvider.GetSize());
+            }
+
             _lastClient = DateTime.UtcNow;
             Loaded = true;
 
@@ -308,6 +323,7 @@ namespace ZBase.World {
                 return;
 
             bool result = MapProvider.Save(filename);
+            SavePortals();
 
             Saved?.Invoke(this);
 
@@ -317,6 +333,17 @@ namespace ZBase.World {
                 Logger.Log(LogType.Error, $"Error saving map {MapProvider.MapName}!");
         }
 
+        private void SavePortals()
+        {
+            try
+            {
+                File.WriteAllText(Filename + "_portals.json", JsonConvert.SerializeObject(Portals.Portals));
+            }
+            catch
+            {
+                Logger.Log(LogType.Error, $"Error saving portals for {MapProvider.MapName}!");
+            }
+        }
 
         public byte[][] GetChunks() {
             if (!Loaded)

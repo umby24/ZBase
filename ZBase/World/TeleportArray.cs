@@ -6,13 +6,25 @@ using ZBase.Common;
 
 namespace ZBase.World {
     public class TeleportArray {
-        private List<Teleporter> _portals;
+        public List<Teleporter> Portals { get; }
         private byte[] _xArray;
         private byte[] _yArray;
         private byte[] _zArray;
 
+        /// <summary>
+        /// Empty constructor for unit tests
+        /// </summary>
         protected TeleportArray()
         {
+
+        }
+
+        public TeleportArray(Vector3S mapSize)
+        {
+            _xArray = new byte[mapSize.X / 8];
+            _yArray = new byte[mapSize.Y / 8];
+            _zArray = new byte[mapSize.Z / 8];
+            Portals = new List<Teleporter>();
 
         }
 
@@ -21,7 +33,7 @@ namespace ZBase.World {
             _xArray = new byte[mapSize.X / 8];
             _yArray = new byte[mapSize.Y / 8];
             _zArray = new byte[mapSize.Z / 8];
-            _portals = portals;
+            Portals = portals;
 
             BuildArrays();
         }
@@ -49,13 +61,13 @@ namespace ZBase.World {
                 return null;
 
             // -- Now the expensive part, a lookup.
-            var portal = _portals.FirstOrDefault(a => a.InRange(location));
+            var portal = Portals.FirstOrDefault(a => a.InRange(location));
             return portal;
         }
 
         private void BuildArrays()
         {
-            foreach (var teleportal in _portals)
+            foreach (var teleportal in Portals)
             {
                 var startBlock = teleportal.OriginStart.GetAsBlockCoords();
                 var endBlock = teleportal.OriginEnd.GetAsBlockCoords();
