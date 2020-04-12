@@ -24,7 +24,9 @@ namespace ZBase.World {
 
         // -- permissions..
         public short BuildRank, Showrank, Joinrank;
-        
+        // -- Portals :>
+        public TeleportArray Portals { get; set; }
+
         // -- Events Generated.
 
         public event BlockchangeArgs BlockChanged;
@@ -281,6 +283,7 @@ namespace ZBase.World {
             MapProvider.Load(filename);
             _lastClient = DateTime.UtcNow;
             Loaded = true;
+
             Logger.Log(LogType.Info, $"Map {MapProvider.MapName} (by {MapProvider.CreatingUser}) loaded.");
             MapLoaded?.Invoke(this);
         }

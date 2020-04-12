@@ -4,14 +4,12 @@ using ZBase.Common;
 namespace ZBase.World {
     public class Teleporter {
         public string Name { get; set; }
-        public Vector3S OriginStart { get; set; }
-        public Vector3S OriginEnd { get; set; }
-        public Vector3S Destination { get; set; }
-        public byte DestinationLook { get; set; }
-        public byte DestinationRot { get; set; }
+        public MinecraftLocation OriginStart { get; set; }
+        public MinecraftLocation OriginEnd { get; set; }
+        public MinecraftLocation Destination { get; set; }
         public string DestinationMap { get; set; }
 
-        public static Teleporter Matches(Vector3S location, IEnumerable<Teleporter> portals) {
+        public static Teleporter Matches(MinecraftLocation location, IEnumerable<Teleporter> portals) {
             foreach (Teleporter teleporter in portals) {
                 if (teleporter.InRange(location))
                     return teleporter;
@@ -20,10 +18,15 @@ namespace ZBase.World {
             return null;
         }
 
-        public bool InRange(Vector3S location) {
-            if (location.X >= OriginStart.X && location.X <= OriginEnd.X) {
-                if (location.Y >= OriginStart.Y && location.Y <= OriginEnd.Y) {
-                    if (location.Z >= OriginStart.Z && location.Z <= OriginEnd.Z)
+        public bool InRange(MinecraftLocation location)
+        {
+            var currentBlock = location.GetAsBlockCoords();
+            var startBlock = OriginStart.GetAsBlockCoords();
+            var endBlock = OriginEnd.GetAsBlockCoords();
+
+            if (currentBlock.X >= startBlock.X && currentBlock.X <= endBlock.X) {
+                if (currentBlock.Y >= startBlock.Y && currentBlock.Y <= endBlock.Y) {
+                    if (currentBlock.Z >= startBlock.Z && currentBlock.Z <= endBlock.Z)
                         return true;
                 }
             }
@@ -35,13 +38,11 @@ namespace ZBase.World {
 
         }
 
-        public Teleporter(Vector3S start, Vector3S end, Vector3S dest, string name, byte look, byte rot, string map) {
+        public Teleporter(MinecraftLocation start, MinecraftLocation end, MinecraftLocation dest, string name, string map) {
             OriginStart = start;
             OriginEnd = end;
             Destination = dest;
             Name = name;
-            DestinationLook = look;
-            DestinationRot = rot;
             DestinationMap = map;
         }
     }

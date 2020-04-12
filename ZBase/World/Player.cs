@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using ZBase.Build;
 using ZBase.Common;
 using ZBase.Network;
@@ -199,7 +198,17 @@ namespace ZBase.World {
                 return;
 
             var newLoc = new MinecraftLocation(location, rot, look);
-            Entity.Location = newLoc; 
+            Entity.Location = newLoc;
+
+            var portal = CurrentMap.Portals.GetPortal(newLoc);
+            
+            if (portal != null)
+            {
+                newLoc = portal.Destination;
+                Entity.Location = newLoc;
+                Entity.SendOwn = true;
+            }
+
             Entity.HandleMove();
         }
 

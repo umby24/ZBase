@@ -252,6 +252,9 @@ namespace ZBase {
             page += "\n\t\t\t<th>Entity ID</th>\n\t\t\t<th>Send Queue</th>\n";
 
             foreach (var client in Server.RoClients) {
+                if (client.ClientPlayer.Entity == null)
+                    continue;
+
                 page += "\t\t\t<tr>\n";
              //   page += "\t\t\t\t<td>" + client.CS.Id + "</td>\n";
                 page += "\t\t\t\t<td>" + client.ClientPlayer.Entity.Name + "</td>\n";

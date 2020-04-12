@@ -1,5 +1,8 @@
 ﻿namespace ZBase.Common {
     public struct MinecraftLocation {
+        public short X => Location.X;
+        public short Y => Location.Y;
+        public short Z => Location.Z;
         public Vector3S Location { get; private set; }
         public byte Rotation { get; set; }
         public byte Look { get; set; }
