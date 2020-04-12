@@ -335,7 +335,7 @@ namespace ZBase.World {
 
             sendMap = GZip.Compress(sendMap); // -- Compress it
 
-            // -- Chunks the compresed map by chunks of 1024.
+            // -- Chunks the compressed map by chunks of 1024.
             var offset = 0;
             var chunks = new List<byte[]>();
 

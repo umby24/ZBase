@@ -8,16 +8,16 @@ using ZBase.Commands;
 using ZBase.Common;
 using ZBase.Fills;
 using ZBase.Network;
-using ZBase.Persistence;
 using ZBase.World;
 using TaskScheduler = ZBase.Common.TaskScheduler;
+
 /*
  * TODO:
  * Permissions
  * Plugins??
  * Physics??
  * How should I do blocks??
- * Building assitance commands (/box, /line, etc) -> Inside plugins, or server?
+ * Building assistance commands (/box, /line, etc) -> Inside plugins, or server?
  * Administrative commands (world history, etc)
  * Block send Queues, per player.. (*)
  * Update GUI and CLI to be fully featured
@@ -25,9 +25,10 @@ using TaskScheduler = ZBase.Common.TaskScheduler;
  * Reboustify things
  * Copy in some D3 Features.. (Configurable file paths, backup times per-map, (*)
  */
- /* ZBASE-SIMPLIFY COMPETION TASKS
+
+ /* ZBASE-SIMPLIFY COMPLETION TASKS
   * - Implement some basic extensibility - Done!
-  * - Portals
+  * - Portals -> Done
   * - Zones
   * - Block Send Queue, Per Player
   * 
