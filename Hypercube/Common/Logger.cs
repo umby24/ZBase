@@ -26,6 +26,7 @@ namespace ZBase.Common {
                 File.AppendAllText(_filename, "# Log Start at " + nowTime.ToLongDateString() + " - " + nowTime.ToLongTimeString() + Environment.NewLine);
 
                 PruneLogs();
+                TaskScheduler.RegisterTask("Logger", this);
                 return;
             }
 

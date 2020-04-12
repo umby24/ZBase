@@ -240,90 +240,9 @@ namespace ZBase.Common {
         void Handle(Client client);
     }
 
-    public struct MinecraftLocation {
-        public Vector3S Location { get; private set; }
-        public byte Rotation { get; set; }
-        public byte Look { get; set; }
-        
-        public MinecraftLocation(Vector3S location, byte rot, byte look) {
-            Location = location;
-            Rotation = rot;
-            Look = look;
-        }
 
-        /// <summary>
-        /// Sets this location based on block coordinates.
-        /// </summary>
-        /// <param name="blockCoords"></param>
-        public void SetAsBlockCoords(Vector3S blockCoords) {
-            Location = new Vector3S {
-                X = (short)(blockCoords.X * 32),
-                Y = (short)(blockCoords.Y * 32),
-                Z = (short)((blockCoords.Z *32) + 51)
-            };
-        }
-        public void SetAsPlayerCoords(Vector3S playerCoords) {
-            Location = new Vector3S {
-                X = playerCoords.X,
-                Y = playerCoords.Y,
-                Z = playerCoords.Z
-            };
-        }
-        public Vector3S GetAsBlockCoords() {
-            return new Vector3S {
-                X = (short)(Location.X / 32),
-                Y = (short)(Location.Y / 32),
-                Z = (short)((Location.Z / 32) - 1)
-            };
-        }
-    }
 
-    public class Vector3S {
-        public bool Equals(Vector3S other) {
-            return X == other.X && Y == other.Y && Z == other.Z;
-        }
 
-        public override bool Equals(object obj) {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is Vector3S && Equals((Vector3S)obj);
-        }
-
-        public override int GetHashCode() {
-            unchecked {
-                int hashCode = X.GetHashCode();
-                hashCode = (hashCode * 397) ^ Y.GetHashCode();
-                hashCode = (hashCode * 397) ^ Z.GetHashCode();
-                return hashCode;
-            }
-        }
-
-        public short X;
-        public short Y;
-        public short Z;
-
-        public Vector3S() {
-            
-        }
-        
-        public Vector3S(short x, short y, short z) {
-            X = x;
-            Y = y;
-            Z = z;
-        }
-
-        public Vector3S(int x, int y, int z) {
-            X = (short) x;
-            Y = (short) y;
-            Z = (short) z;
-        }
-        public static bool operator ==(Vector3S item1, Vector3S item2) {
-            return item1.X == item2.X && item1.Y == item2.Y && item1.Z == item2.Z;
-        }
-
-        public static bool operator !=(Vector3S item1, Vector3S item2) {
-            return !(item1 == item2);
-        }
-    }
 
     public class Block {
         public byte Id { get; set; } // -- Internal server ID

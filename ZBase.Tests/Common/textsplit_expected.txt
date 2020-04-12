@@ -1,0 +1,139 @@
+﻿test
+                                                           
+test &
+                                                         
+test &&
+                                                        
+test & test
+                                                    
+test && test
+                                                   
+test 1 2 3
+                                                     
+& test
+                                                         
+test
+                                                           
+& test
+                                                         
+&test
+                                                          
+&& test
+                                                        
+&&test
+                                                         
+&
+                                                              
+&&
+                                                             
+&&&&
+                                                           
+&&.
+                                                            
+&
+                                                              
+&&&
+                                                            
+a&&
+                                                            
+a&&&&
+                                                          
+a&
+                                                             
+a && a
+                                                         
+&& &&
+                                                          
+&& a
+                                                           
+&& &
+                                                           
+&&&& a
+                                                         
+a &&
+                                                           
+a &&&&
+                                                         
+a&& &&
+                                                         
+a&&&
+                                                           
+a &&&
+                                                          
+a&& &
+                                                          
+a &&&
+                                                          
+&&
+                                                             
+&&
+                                                             
+&&&&
+                                                           
+&&&&
+                                                           
+&&&&
+                                                           
+&& &&
+                                                          
+&&
+                                                             
+&& &&
+                                                          
+&& &&
+                                                          
+&& &&
+                                                          
+&& &&
+                                                          
+&& &&
+                                                          
+&&
+                                                             
+&&
+                                                             
+&&&&
+                                                           
+&&&&
+                                                           
+ &&&&
+                                                          
+&&&& a
+                                                         
+&&&& 
+                                                          
+&&& &
+                                                          
+derp &
+                                                         
+&&&&&
+                                                          
+&SA&SDSDS& D&&&& ASDSA A 
+                                      
+derp
+                                                           
+Derp
+                                                           
+&&&&&&
+                                                         
+0123456789abcdef
+                                               
+0123456789abcdef0123456789abcdef
+                               
+0123456789abcdef0123456789abcdef0123456789abcdef
+               
+http://www.google.com.au/imgres?q=derp&hl=enlient=safari&sa=    
+X&rls=eniw=961ih=686&tbm=isch&prmd=imvns&tbnid=ZEoJ8CYFZhUsq    
+M:&imgrefurl=
+                                                  
+http://theextinctionprotocol.wordpress.com/2011/10/15/strate    
+gy-to-survive-1st-round-strike-by-u-s-3000-miles-of-secret-t    
+unnels-hide-chinas-nuclear-weapons/
+                            
+http://www.google.com.au/imgres?q=derp&hl=enlient=safari&sa=    
+X&rls=eniw=961ih=686&tbm=isch&prmd=imvns&tbnid=ZEoJ8CYFZhUsq    
+M:&imgrefurl=http://forums.electronicarts.co.uk/battlefield-    
+3-pc/1457051-derp-derp-derp.htmlocid=FRvkg9uiPFQXbM&imgurl=h    
+ttp://images.cheezburger.com/completestore/2011/1/9/dcc63792    
+-a4ac-4ce0-9cae-927c2b39ddf9.jpg&w=426&h=284i=ByXUT-ubK4qjiA    
+fgjMGSAw&zoom=1&iact=hc&vpx=454&vpy=221ur=470&hovh=165&h        

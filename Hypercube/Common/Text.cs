@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace ZBase.Common {
     public static class Text {
         const string RegexString = "[^A-Za-z0-9!\\^\\~$%&/()=?{}\t\\[\\]\\\\ ,\\\";.:\\-_#'+*<>|@]|&.$|&.(&.)";
-
+		const string ColorCodeRegex = "\\&[A-Fa-f0-9]";
         /// <summary>
         /// Replaces invalid chat characters with "*".
         /// </summary>
@@ -41,32 +41,8 @@ namespace ZBase.Common {
         /// <param name="input">The text to strip color codes from.</param>
         /// <returns>Non-colored text</returns>
         public static string RemoveColors(string input) {
-            input = input.Replace("&0", "");
-            input = input.Replace("&1", "");
-            input = input.Replace("&2", "");
-            input = input.Replace("&3", "");
-            input = input.Replace("&4", "");
-            input = input.Replace("&5", "");
-            input = input.Replace("&6", "");
-            input = input.Replace("&7", "");
-            input = input.Replace("&8", "");
-            input = input.Replace("&9", "");
-
-            input = input.Replace("&A", "");
-            input = input.Replace("&B", "");
-            input = input.Replace("&C", "");
-            input = input.Replace("&D", "");
-            input = input.Replace("&E", "");
-            input = input.Replace("&F", "");
-
-            input = input.Replace("&a", "");
-            input = input.Replace("&b", "");
-            input = input.Replace("&c", "");
-            input = input.Replace("&d", "");
-            input = input.Replace("&e", "");
-            input = input.Replace("&f", "");
-
-            return input;
+			var matcher = new Regex(ColorCodeRegex, RegexOptions.Multiline);
+			return matcher.Replace(input, "");
         }
 
 		public static List<string> SplitBrs(string input) {
@@ -118,7 +94,7 @@ namespace ZBase.Common {
 						temp += builder[i].Substring(0, thisIndex) + "<br>"; // -- Put the string before, with the seperator, and our break.
 
 						// -- Finally, Remove this part of the string from the original Builder[i], and add our newline seperators.
-						builder[i] = builder[i].Substring(thisIndex + 1, builder[i].Length - (thisIndex + 1)); // -- It will now loop again for any subsequent breaks.
+						builder[i] = builder[i].Substring(thisIndex, builder[i].Length - (thisIndex)); // -- It will now loop again for any subsequent breaks.
 					} else {
 						// -- Since Builder[i] is not (or is no longer) greater than 64 characters long, we can simply remove the whole thing :)
 						temp += builder[i];
@@ -131,11 +107,6 @@ namespace ZBase.Common {
 
 			// -- Next, remove any "<br>"'s, and split up the line on either side of it.
 			for (var z = 0; z < builder.Count; z++) {
-		//		var split = SplitBrs (builder [z]);
-		//		Console.WriteLine (split [0]);
-	//			builder.InsertRange (z+1, split);
-
-
 				while (builder[z].IndexOf("<br>", StringComparison.OrdinalIgnoreCase) >= 0) {
 					temp = builder[z];
 					int index = builder[z].IndexOf("<br>", StringComparison.OrdinalIgnoreCase);

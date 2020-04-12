@@ -19,6 +19,8 @@ namespace ZBase.Network {
         public string Ip { get; set; } // -- The IP of the connected client
         public Player ClientPlayer { get; set; } // -- The entity tied to this client (If they are verified.)
         public bool Verified { get; set; } // -- True if this is a minecraft client that has been negotiated with us.
+
+        private const string BannedMessage = "You are banned!";
         public readonly ByteBuffer SendBuffer; // -- The send buffer
 		public string ChatBuffer {get; set;} // -- TODO: This should be on a higher level.
         public ConcurrentQueue<SetBlockServer> BlockChanges { get; set; }
@@ -32,6 +34,7 @@ namespace ZBase.Network {
 		private readonly ByteBuffer _receiveBuffer; // -- The receive buffer
 		private DateTime _lastActive; // -- Last time a packet was handled from this client (for timeouts)
         private bool _canReceive; // -- If the client is allowed to send packets to the server or not.
+        private bool _disconnectOnSend;
         private readonly object _fk = new object(); // -- Lock to ensure two packets are not being handled at once
         private readonly string _taskId; // -- The task ID for the timeout for this client.
         public bool DataAvailable;
@@ -51,6 +54,7 @@ namespace ZBase.Network {
             _socket.Disconnected += SocketOnDisconnected;
             SendBuffer.DataAdded += SendBufferOnDataAdded;
             _canReceive = true;
+            _disconnectOnSend = false;
 
             Ip = ((IPEndPoint)(sock.Client.RemoteEndPoint)).Address.ToString();
             
@@ -63,11 +67,12 @@ namespace ZBase.Network {
             _taskId = Ip + new Random().Next(2035, 193876957);
             _taskId = TaskScheduler.RegisterTask(_taskId, this);
 
-            Server.RegisterClient(this);
+            Kick("You suck lol");
+            //Server.RegisterClient(this);
 
-            if (Player.Database.IsIpBanned(Ip)) {
-                Kick("You are banned!");
-            }
+            //if (Player.Database.IsIpBanned(Ip)) {
+            //    Kick(BannedMessage);
+            //}
         }
 
 
@@ -75,9 +80,9 @@ namespace ZBase.Network {
 
         public void SendQueued() {
             lock (SendBuffer) {
-                byte[] allbytes = SendBuffer.GetAllBytes();
-                Interlocked.Add(ref Server.SentIncrement, allbytes.Length);
-                _socket.Send(allbytes);
+                byte[] allBytes = SendBuffer.GetAllBytes();
+                Interlocked.Add(ref Server.SentIncrement, allBytes.Length);
+                _socket.Send(allBytes);
                 DataAvailable = !BlockChanges.IsEmpty;
             }
 
@@ -91,6 +96,9 @@ namespace ZBase.Network {
                     packet.Write(SendBuffer);
                 }
             }
+
+            if (_disconnectOnSend)
+                Shutdown();
         }
         /// <summary>
         /// This gets called when there is data to be sent to the client
@@ -151,7 +159,8 @@ namespace ZBase.Network {
         public void Kick(string reason) { 
 			SendPacket (PacketCreator.CreateDisconnect(reason));
             Logger.Log(LogType.Info, Verified ? $"{ClientPlayer.Name} kicked. ({reason})" : $"{Ip} kicked. ({reason})");
-            Shutdown();
+            _disconnectOnSend = true;
+        //    Shutdown();
         }
 
         /// <summary>

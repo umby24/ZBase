@@ -60,7 +60,6 @@ namespace ZBase {
         private static void Setup() {
             var myLogger = new Logger();
             myLogger.Setup();
-            TaskScheduler.RegisterTask("Logger", myLogger);
 
             Logger.Log(LogType.Debug, "Loading configuration...");
             Configuration.Load(); // -- Load server settings.

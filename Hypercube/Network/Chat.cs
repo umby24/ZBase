@@ -6,6 +6,8 @@ using ZBase.World;
 
 namespace ZBase.Network {
     public static class Chat {
+        private const string MutedMessage = "You are muted!";
+
         public static event StringEventArgs GlobalChatSent;
 
         public static void SendGlobalChat(string message, sbyte messageType, bool log = false) {
@@ -38,7 +40,7 @@ namespace ZBase.Network {
 
         public static void HandleIncoming(Client c, string message, bool extend = false) {
             if (c.ClientPlayer.MutedUntil >= DateTime.UtcNow) {
-                SendClientChat("§SYou are muted!", 0, c);
+                SendClientChat(Constants.SystemColor + MutedMessage, 0, c);
                 return;
             }
 
@@ -52,7 +54,7 @@ namespace ZBase.Network {
                 return;
             }
 
-            SendGlobalChat(c.ClientPlayer.PrettyName + "&f: " + c.ChatBuffer + message, 0, true);
+            SendGlobalChat(c.ClientPlayer.PrettyName + Constants.DefaultColor + ": " + c.ChatBuffer + message, 0, true);
             c.ChatBuffer = "";
         }
 

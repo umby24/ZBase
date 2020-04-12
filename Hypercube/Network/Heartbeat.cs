@@ -9,6 +9,7 @@ using ZBase.Common;
 
 namespace ZBase.Network {
     public class Heartbeat : TaskItem {
+        private const string ClassicubeNetAddress = "classicube.net";
         private static string _salt;
         internal static string ServerUrl;
         private static byte _failCount;
@@ -34,8 +35,8 @@ namespace ZBase.Network {
         /// <param name="name"></param>
         /// <param name="mppass"></param>
         /// <returns>true if verified, false otherwise.</returns>
-        public static bool Verify(Client c, string name, string mppass) {
-            if (c.Ip == "127.0.0.1" || c.Ip.Substring(0, 7) == "192.168" ||
+        public static bool Verify(string clientIp, string name, string mppass) {
+            if (clientIp == Constants.LocalhostNetwork || clientIp.Substring(0, 7) == Constants.LocalNetworkPrefix ||
                 Configuration.Settings.Network.VerifyNames == false)
                 return true;
 
@@ -76,7 +77,7 @@ namespace ZBase.Network {
             var request = new WebClient();
 
             try {
-                request.Proxy = new WebProxy("http://" + GetIPv4Address("classicube.net") + ":80/"); // -- Makes sure we're using an IPv4 Address and not IPv6.
+                request.Proxy = new WebProxy("http://" + GetIPv4Address(ClassicubeNetAddress) + ":80/"); // -- Makes sure we're using an IPv4 Address and not IPv6.
             } catch {
                 Logger.Log(LogType.Warning, "Failed to send heartbeat.");
                 _failCount += 1;
@@ -92,7 +93,7 @@ namespace ZBase.Network {
 
             try {
                 string response = request.DownloadString(
-                    $"http://www.classicube.net/heartbeat.jsp?port={port}&users={online}&max={max}&name={HttpUtility.UrlEncode(name)}&public={isPublic}&software={software}&salt={HttpUtility.UrlEncode(_salt)}");
+                    $"http://www.{ClassicubeNetAddress}/heartbeat.jsp?port={port}&users={online}&max={max}&name={HttpUtility.UrlEncode(name)}&public={isPublic}&software={software}&salt={HttpUtility.UrlEncode(_salt)}");
                 if (response.Contains("http")) {
                     Logger.Log(LogType.Info, "Heartbeat sent.");
                     Interval = new TimeSpan(0, 0, 45);

@@ -1,0 +1,65 @@
+﻿test
+test &
+test &&
+test & test
+test && test
+test &c1 2 3
+& test
+test
+& test
+&test
+&& test
+&&test
+&
+&&
+&&&&
+&&.
+&&a
+&&&&a
+a&&
+a&&&&
+a&&a
+a && a
+&& &&
+&& a
+&& &&a
+&&&& a
+a &&
+a &&&&
+a&& &&
+a&&&&a
+a &&&&a
+a&& &&a
+a &&&&a
+&f&&
+&&&f
+&f&&&&
+&&&f&&
+&&&&&f
+&f&& &&
+&f&&&f
+&& &&&a
+&&&a &&
+&& &a&&
+&a&& &&&a
+&a&& &&
+&a&&
+&a&&&a
+&a&&&&
+&&&a&&
+ &&&&
+&&&& a
+&&&& &f
+&&& &
+derp &
+&&&&&
+&A&S&DA&SD&ASD&AS& D&&&& ASD&AS&DA&D A&D 
+&fderp
+&bDerp
+&&&a&&&b&&&c
+&00&11&22&33&44&55&66&77&88&99&aa&bb&cc&dd&ee&ff
+&00&11&22&33&44&55&66&77&88&99&aa&bb&cc&dd&ee&ff&00&11&22&33&44&55&66&77&88&99&aa&bb&cc&dd&ee&ff
+&00&11&22&33&44&55&66&77&88&99&aa&bb&cc&dd&ee&ff&00&11&22&33&44&55&66&77&88&99&aa&bb&cc&dd&ee&ff&00&11&22&33&44&55&66&77&88&99&aa&bb&cc&dd&ee&ff
+http://www.google.com.au/imgres?q=derp&hl=en&client=safari&sa=X&rls=en&biw=961&bih=686&tbm=isch&prmd=imvns&tbnid=ZEoJ8CYFZhUsqM:&imgrefurl=
+http://theextinctionprotocol.wordpress.com/2011/10/15/strategy-to-survive-1st-round-strike-by-u-s-3000-miles-of-secret-tunnels-hide-chinas-nuclear-weapons/
+http://www.google.com.au/imgres?q=derp&hl=en&client=safari&sa=X&rls=en&biw=961&bih=686&tbm=isch&prmd=imvns&tbnid=ZEoJ8CYFZhUsqM:&imgrefurl=http://forums.electronicarts.co.uk/battlefield-3-pc/1457051-derp-derp-derp.html&docid=FRvkg9uiPFQXbM&imgurl=http://images.cheezburger.com/completestore/2011/1/9/dcc63792-a4ac-4ce0-9cae-927c2b39ddf9.jpg&w=426&h=284&ei=ByXUT-ubK4qjiAfgjMGSAw&zoom=1&iact=hc&vpx=454&vpy=221&dur=470&hovh=165&h 

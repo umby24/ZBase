@@ -40,7 +40,7 @@ namespace ZBase.Network {
                 return;
             }
             
-            if (!Heartbeat.Verify(c, Name, Motd)) {
+            if (!Heartbeat.Verify(c.Ip, Name, Motd)) {
                 c.Kick("Failed to verify name"); 
                 return;
             }
