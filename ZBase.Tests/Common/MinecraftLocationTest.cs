@@ -1,20 +1,19 @@
-﻿using ZBase.Common;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
+using ZBase.Common;
 
 namespace ZBase.Tests.Common {
-    [TestClass]
     public class MinecraftLocationTest {
         private MinecraftLocation givenMinecraftLocation;
         private Vector3S givenVector;
 
-        [TestInitialize]
+        [SetUp]
         public void Setup()
         {
             givenVector = new Vector3S(100, 100, 100);
             givenMinecraftLocation = new MinecraftLocation(givenVector, 100, 100);
         }
 
-        [TestMethod]
+        [Test]
         public void SetBlockCoordsTest()
         {
             givenMinecraftLocation.SetAsBlockCoords(givenVector);
@@ -24,7 +23,7 @@ namespace ZBase.Tests.Common {
             Assert.AreEqual(3251, givenMinecraftLocation.Location.Z);
         }
 
-        [TestMethod]
+        [Test]
         public void GetBlockCoordsTest()
         {
             givenMinecraftLocation.SetAsBlockCoords(givenVector);
@@ -34,7 +33,7 @@ namespace ZBase.Tests.Common {
             Assert.AreEqual(givenVector, actualVector);
         }
 
-        [TestMethod]
+        [Test]
         public void EqualsCheck()
         {
             var givenOtherMinecraftLocation = new MinecraftLocation(givenVector, 100, 100);
@@ -42,7 +41,7 @@ namespace ZBase.Tests.Common {
             Assert.AreEqual(givenMinecraftLocation, givenOtherMinecraftLocation);
         }
 
-        [TestMethod]
+        [Test]
         public void EqualsNegativeCheck()
         {
             var givenOtherMinecraftLocation = new MinecraftLocation(givenVector, 255, 255);

@@ -1,12 +1,14 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ZBase.Tests {
-    [TestClass]
-    public class UnitTest1 {
-        [TestMethod]
-        public void TestMethod1() {
-            Assert.AreEqual(1, 1);
+    public class Tests {
+        [SetUp]
+        public void Setup() {
+        }
+
+        [Test]
+        public void Test1() {
+            Assert.Pass();
         }
     }
 }

@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using ZBase.Common;
 
-
 namespace ZBase.Tests.Common {
-    [TestClass]
     public class TextTests {
-        [TestMethod]
+        [Test]
         public void RemoveColorsTest()
         {
             var givenInput = "&4I am a &csystem test &Fmessage!";
@@ -21,7 +14,7 @@ namespace ZBase.Tests.Common {
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
+        [Test]
         public void RemoveColorsNegativeTest()
         {
             var givenInput = "&qI am a &zsystem test &rmessage!";
@@ -31,7 +24,8 @@ namespace ZBase.Tests.Common {
             Assert.AreEqual(givenInput, actual);
         }
 
-        [TestMethod]
+        /*
+        [Test]
         public void TestSplitLines()
         {
             var tests = Properties.Resources.textsplits;
@@ -51,6 +45,6 @@ namespace ZBase.Tests.Common {
             }
 
             Assert.AreEqual(testExpected, actual);
-        }
+        }*/
     }
 }
