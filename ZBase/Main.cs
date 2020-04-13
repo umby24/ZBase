@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using ZBase.BuildModes;
 using ZBase.Commands;
 using ZBase.Common;
 using ZBase.Fills;
@@ -42,7 +44,15 @@ namespace ZBase {
         /// <summary>
         /// Starts the Hypercube server.
         /// </summary>
-        public static void Start() {
+        public static void Start()
+        {
+            JsonConvert.DefaultSettings = () =>
+            {
+                var settings = new JsonSerializerSettings();
+                settings.Converters.Add(new MinecraftLocationConverter());
+                return settings;
+            };
+
             Setup();
             Running = true;
             Task.Run(() => MainLoop());
@@ -75,6 +85,7 @@ namespace ZBase {
             TaskScheduler.RegisterTask("Heartbeat", new Heartbeat());
             TaskScheduler.RegisterTask("Blocks", new BlockManager());
             TaskScheduler.RegisterTask("PluginManager", new PluginManager());
+            TaskScheduler.RegisterTask("BuildModeManager", new BuildModeManager());
             CommandHandler.RegisterInternalCommands();
             TaskScheduler.RegisterTask("Commands", new CommandHandler());
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ZBase.Build;
+using ZBase.BuildModes;
 using ZBase.Common;
 using ZBase.Network;
 using ZBase.Persistence;
@@ -259,9 +260,16 @@ namespace ZBase.World {
             if (mode == 1)
                 actualType = type;
 
+            var actualBlock = BlockManager.GetBlock(type);
+
+            if (CurrentState.CurrentMode != null)
+            {
+                CurrentState.CurrentMode.Invoke(_client, location, mode, actualBlock);
+                return;
+            }
             // -- Handle the case that a player does not support block permissions but isn't allowed to place something..
 
-            LastMaterial = BlockManager.GetBlock(type);
+            LastMaterial = actualBlock;
             CurrentMap.SetBlockId(location.X, location.Y, location.Z, actualType);
         }
 
@@ -276,6 +284,19 @@ namespace ZBase.World {
             }
 
             _client.SendPacket(PacketCreator.CreateMapFinal(CurrentMap.GetSize()));
+        }
+
+        public void SetBuildMode(string buildmode)
+        {
+            var newBm = BuildModeManager.Instance.GetBuildmode(buildmode);
+            
+            if (newBm == null)
+                return;
+
+            CurrentState = new BuildState();
+            CurrentState.CurrentMode = newBm;
+
+            Chat.SendClientChat($"§SBuildmode {newBm.Name} started.", 0, _client);
         }
 
         /// <summary>

@@ -76,8 +76,6 @@ namespace ZBase.World {
             else
                 MapProvider = new D3MapProvider();
 
-            Portals = new TeleportArray(MapProvider.GetSize());
-
             Load(filename);
             Filename = filename;
 
@@ -294,6 +292,10 @@ namespace ZBase.World {
                 var teleporters =
                     JsonConvert.DeserializeObject<List<Teleporter>>(File.ReadAllText(Filename + "_portals.json"));
                 Portals = new TeleportArray(teleporters, MapProvider.GetSize());
+            }
+            else
+            {
+                Portals = new TeleportArray(MapProvider.GetSize());
             }
 
             _lastClient = DateTime.UtcNow;

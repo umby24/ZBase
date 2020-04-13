@@ -38,6 +38,33 @@ namespace ZBase.World {
             BuildArrays();
         }
 
+        public Teleporter GetByName(string name)
+        {
+            return Portals.FirstOrDefault(a => string.Equals(a.Name, name, StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        public void Create(Teleporter portal)
+        {
+            Portals.Add(portal);
+            _xArray = new byte[_xArray.Length];
+            _yArray = new byte[_yArray.Length];
+            _zArray = new byte[_zArray.Length];
+            BuildArrays();
+        }
+
+        public void Remove(string name)
+        {
+            var thePortal = GetByName(name);
+
+            if (thePortal != null)
+            {
+                Portals.Remove(thePortal);
+                _xArray = new byte[_xArray.Length];
+                _yArray = new byte[_yArray.Length];
+                _zArray = new byte[_zArray.Length];
+                BuildArrays();
+            }
+        }
         public Teleporter GetPortal(MinecraftLocation location)
         {
             var blockLocation = location.GetAsBlockCoords();

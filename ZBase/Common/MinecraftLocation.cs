@@ -1,4 +1,71 @@
-﻿namespace ZBase.Common {
+﻿using System;
+using System.IO;
+using Newtonsoft.Json;
+
+namespace ZBase.Common {
+    public class MinecraftLocationConverter : JsonConverter
+    {
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        {
+            var ml = (MinecraftLocation) value;
+            writer.WriteStartObject();
+            writer.WritePropertyName("Location");
+            serializer.Serialize(writer, ml.Location);
+            writer.WritePropertyName("Rotation");
+            serializer.Serialize(writer, ml.Rotation);
+            writer.WritePropertyName("Look");
+            serializer.Serialize(writer, ml.Look);
+            writer.WriteEndObject();
+        }
+
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        {
+            var location = new Vector3S();
+            byte rotation = 0, look = 0;
+
+            bool gotLocation = false, gotRotation = false, gotLook = false;
+
+            while (reader.Read())
+            {
+                if (reader.TokenType != JsonToken.PropertyName)
+                    break;
+
+                var propertyName = (string) reader.Value;
+                
+                if (!reader.Read())
+                    continue;
+
+                if (propertyName == "Location")
+                {
+                    location = serializer.Deserialize<Vector3S>(reader);
+                    gotLocation = true;
+                }
+
+                if (propertyName == "Rotation")
+                {
+                    rotation = serializer.Deserialize<byte>(reader);
+                    gotRotation = true;
+                }
+
+                if (propertyName == "Look")
+                {
+                    look = serializer.Deserialize<byte>(reader);
+                    gotLook = true;
+                }
+            }
+
+            if (!(gotLook && gotLocation && gotRotation))
+                throw new InvalidDataException("A MinecraftLocation must have a location, look, and rotation.");
+
+            return new MinecraftLocation(location, rotation, look);
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(MinecraftLocation) || objectType == typeof(MinecraftLocation?);
+        }
+    }
+
     public struct MinecraftLocation {
         public short X => Location.X;
         public short Y => Location.Y;

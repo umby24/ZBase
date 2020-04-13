@@ -12,5 +12,7 @@ namespace ZBase.Common {
         public const string LocalhostNetwork = "127.0.0.1";
         public const string DefaultBanMessage = "You are banned!";
         public const string InvalidNumArgumentsMessage = "§EInvalid number of arguments.";
+        public const string AddPortalBuildModeName = "AddPortal";
+        public const string DeletePortalBuildModeName = "DeletePortal";
     }
 }

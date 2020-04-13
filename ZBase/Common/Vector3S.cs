@@ -22,9 +22,9 @@
             }
         }
 
-        public short X;
-        public short Y;
-        public short Z;
+        public short X { get; set; }
+        public short Y { get; set; }
+        public short Z { get; set; }
 
         public Vector3S(short x, short y, short z) => (X, Y, Z) = (x, y, z);
 
