@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ZBaseConsole": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
