@@ -101,24 +101,23 @@ namespace ZBase.BuildModes {
             Name = Constants.DeletePortalBuildModeName;
         }
 
-        public override void Invoke(Client client, Vector3S location, byte mode, Block block)
+        public override void Invoke(Vector3S location, byte mode, Block block)
         {
             var newLocation = new MinecraftLocation();
             newLocation.SetAsBlockCoords(location);
 
-            Teleporter matches = client.ClientPlayer.Entity.CurrentMap.Portals.GetPortal(newLocation); //Teleporter.Matches(location, client.ClientPlayer.Entity.CurrentMap.Teleporters);
+            Teleporter matches = ExecutingClient.ClientPlayer.Entity.CurrentMap.Portals.GetPortal(newLocation); //Teleporter.Matches(location, client.ClientPlayer.Entity.CurrentMap.Teleporters);
 
-            if (matches == null)
-            {
-                Chat.SendClientChat("§EThere is no portal here.", 0, client);
-                client.ClientPlayer.CurrentState.ResendBlocks(client);
+            if (matches == null) {
+                SendExecutorMessage("§EThere is no portal here.");
+                ExecutingClient.ClientPlayer.CurrentState.ResendBlocks(ExecutingClient);
                 return;
             }
 
-            Chat.SendClientChat($"§SPortal {matches.Name} deleted.", 0, client);
-            client.ClientPlayer.Entity.CurrentMap.Portals.Remove(matches.Name);
-            client.ClientPlayer.CurrentState.CurrentMode = null;
-            client.ClientPlayer.CurrentState.ResendBlocks(client);
+            SendExecutorMessage($"§SPortal {matches.Name} deleted.");
+            ExecutingClient.ClientPlayer.Entity.CurrentMap.Portals.Remove(matches.Name);
+            ExecutingClient.ClientPlayer.CurrentState.CurrentMode = null;
+            ExecutingClient.ClientPlayer.CurrentState.ResendBlocks(ExecutingClient);
         }
     }
 
@@ -130,25 +129,25 @@ namespace ZBase.BuildModes {
             Name = Constants.AddPortalBuildModeName;
         }
 
-        public override void Invoke(Client client, Vector3S location, byte mode, Block block)
+        public override void Invoke(Vector3S location, byte mode, Block block)
         {
             if (mode == 0)
                 return;
 
-            int state = client.ClientPlayer.CurrentState.GetInt(0);
+            int state = ExecutingClient.ClientPlayer.CurrentState.GetInt(0);
             if (state == 0)
             {
                 var newLocation = new MinecraftLocation();
                 newLocation.SetAsBlockCoords(location);
 
-                client.ClientPlayer.CurrentState.SetCoord(newLocation, 1);
-                client.ClientPlayer.CurrentState.Set(1, 0);
+                ExecutingClient.ClientPlayer.CurrentState.SetCoord(newLocation, 1);
+                ExecutingClient.ClientPlayer.CurrentState.Set(1, 0);
                 return;
             }
 
-            var dest = client.ClientPlayer.CurrentState.GetCoord(0);
-            var map = client.ClientPlayer.CurrentState.GetString(0);
-            var firstBlock = client.ClientPlayer.CurrentState.GetCoord(1);
+            var dest = ExecutingClient.ClientPlayer.CurrentState.GetCoord(0);
+            var map = ExecutingClient.ClientPlayer.CurrentState.GetString(0);
+            var firstBlock = ExecutingClient.ClientPlayer.CurrentState.GetCoord(1);
 
             var oEnd = new MinecraftLocation();
             oEnd.SetAsBlockCoords(location);
@@ -157,7 +156,7 @@ namespace ZBase.BuildModes {
 
             var newTp = new Teleporter
             {
-                Name = client.ClientPlayer.CurrentState.GetString(1),
+                Name = ExecutingClient.ClientPlayer.CurrentState.GetString(1),
                 Destination = dest,
                 DestinationMap = map,
                 OriginEnd = oEnd,
@@ -165,19 +164,19 @@ namespace ZBase.BuildModes {
             };
 
             // -- Check for existing teleporters of the same name:
-            Teleporter item = client.ClientPlayer.Entity.CurrentMap.Portals.GetByName(newTp.Name);
+            Teleporter item = ExecutingClient.ClientPlayer.Entity.CurrentMap.Portals.GetByName(newTp.Name);
 
             if (item != null)
             {
-                Chat.SendClientChat("§SA teleporter with that name already exists in this map.", 0, client);
-                client.ClientPlayer.CurrentState.ResendBlocks(client);
+                SendExecutorMessage("§SA teleporter with that name already exists in this map.");
+                ExecutingClient.ClientPlayer.CurrentState.ResendBlocks(ExecutingClient);
                 return;
             }
 
-            client.ClientPlayer.Entity.CurrentMap.Portals.Create(newTp);
-            Chat.SendClientChat("§STeleporter Created.", 0, client);
-            client.ClientPlayer.CurrentState.CurrentMode = null;
-            client.ClientPlayer.CurrentState.ResendBlocks(client);
+            ExecutingClient.ClientPlayer.Entity.CurrentMap.Portals.Create(newTp);
+            SendExecutorMessage("§STeleporter Created.");
+            ExecutingClient.ClientPlayer.CurrentState.CurrentMode = null;
+            ExecutingClient.ClientPlayer.CurrentState.ResendBlocks(ExecutingClient);
         }
     }
 }

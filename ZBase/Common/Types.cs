@@ -146,8 +146,12 @@ namespace ZBase.Common {
 
     public abstract class BuildMode {
         public string Name { get; set; }
-
-        public abstract void Invoke(Client client, Vector3S location, byte mode, Block block);
+        public Client ExecutingClient { get; set; }
+        public abstract void Invoke(Vector3S location, byte mode, Block block);
+        
+        protected void SendExecutorMessage(string message) {
+            Chat.SendClientChat(message, 0, ExecutingClient);    
+        }
     }
 
     public class UndoItem {
