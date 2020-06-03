@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -10,7 +11,7 @@ using ZBase.Common;
 namespace ZBase.Network {
     public class Heartbeat : TaskItem {
         private const string ClassicubeNetAddress = "classicube.net";
-        private static string _salt;
+        public static string _salt;
         internal static string ServerUrl;
         private static byte _failCount;
 
@@ -62,6 +63,24 @@ namespace ZBase.Network {
             return v4.ToString();
         }
 
+        public static string CallClassicube(string port, string users, string maxUsers, string serverName, string isPublic, string software, string salt) {
+            StringBuilder urlBuilder = new StringBuilder();
+            urlBuilder.Append($"http://www.{ClassicubeNetAddress}/heartbeat.jsp");
+            urlBuilder.Append($"?port={port}");
+            urlBuilder.Append($"&users={users}");
+            urlBuilder.Append($"&max={maxUsers}");
+            urlBuilder.Append($"&name={serverName}");
+            urlBuilder.Append($"&public={isPublic}");
+            urlBuilder.Append($"&software={software}");
+            urlBuilder.Append($"&salt={salt}");
+
+            var request = new WebClient {
+                Proxy = new WebProxy($"http://{GetIPv4Address(ClassicubeNetAddress)}:80/")
+            };
+            
+            return request.DownloadString(urlBuilder.ToString());
+        }
+        
         /// <summary>
         /// Performs a heartbeat to classicube.net
         /// </summary>
@@ -74,26 +93,17 @@ namespace ZBase.Network {
                 _failCount = 0;
             }
 
-            var request = new WebClient();
+            var port = Configuration.Settings.Network.ListenPort.ToString();
+            var online = Server.OnlinePlayers.ToString();
+            var max = Configuration.Settings.Network.MaxPlayers.ToString();
+            var isPublic = Configuration.Settings.Network.Public.ToString();
+            string name = HttpUtility.UrlEncode(Configuration.Settings.General.Name);
+            string salt = HttpUtility.UrlEncode(_salt);
+            string software = "ZBase";
 
             try {
-                request.Proxy = new WebProxy("http://" + GetIPv4Address(ClassicubeNetAddress) + ":80/"); // -- Makes sure we're using an IPv4 Address and not IPv6.
-            } catch {
-                Logger.Log(LogType.Warning, "Failed to send heartbeat.");
-                _failCount += 1;
-                return;
-            }
-
-            int port = Configuration.Settings.Network.ListenPort;
-            var online = Server.OnlinePlayers;
-            int max = Configuration.Settings.Network.MaxPlayers;
-            bool isPublic = Configuration.Settings.Network.Public;
-            string name = Configuration.Settings.General.Name;
-            var software = "ZBase";
-
-            try {
-                string response = request.DownloadString(
-                    $"http://www.{ClassicubeNetAddress}/heartbeat.jsp?port={port}&users={online}&max={max}&name={HttpUtility.UrlEncode(name)}&public={isPublic}&software={software}&salt={HttpUtility.UrlEncode(_salt)}");
+                string response = CallClassicube(port, online, max, name, isPublic, software, salt);
+                
                 if (response.Contains("http")) {
                     Logger.Log(LogType.Info, "Heartbeat sent.");
                     Interval = new TimeSpan(0, 0, 45);
