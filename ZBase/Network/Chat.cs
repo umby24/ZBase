@@ -35,7 +35,7 @@ namespace ZBase.Network {
             if (log)
                 Logger.Log(LogType.Chat, "[To: " + recipient.ClientPlayer.Name + "]: " + message);
 
-            recipient.ClientPlayer.PersonalChatReceived(message);
+            recipient.ClientPlayer.HandleChatReceived(message);
         }
 
         public static void HandleIncoming(Client c, string message, bool extend = false) {
@@ -54,7 +54,7 @@ namespace ZBase.Network {
                 return;
             }
 
-            SendGlobalChat(c.ClientPlayer.PrettyName + Constants.DefaultColor + ": " + c.ClientPlayer.ChatBuffer + message, 0, true);
+            SendGlobalChat(c.ClientPlayer.Entity.PrettyName + Constants.DefaultColor + ": " + c.ClientPlayer.ChatBuffer + message, 0, true);
             c.ClientPlayer.ChatBuffer = "";
         }
 

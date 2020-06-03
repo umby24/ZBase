@@ -42,7 +42,7 @@ namespace ZBase.Commands {
             }
 
             Mapfill myFill = fills.FirstOrDefault().Value;
-            myFill.Execute(ExecutingClient.ClientPlayer.CurrentMap, args);
+            myFill.Execute(ExecutingClient.ClientPlayer.Entity.CurrentMap, args);
             SendExecutorMessage("§SFill complete.");
         }
     }

@@ -47,12 +47,12 @@ namespace ZBase.Commands {
                 return;
             }
 
-            if (ExecutingClient.ClientPlayer.CurrentMap == HcMap.DefaultMap) {
+            if (ExecutingClient.ClientPlayer.Entity.CurrentMap == HcMap.DefaultMap) {
                 SendExecutorMessage("§EYou cannot delete the default map!");
                 return;
             }
 
-            HcMap toDelete = ExecutingClient.ClientPlayer.CurrentMap;
+            HcMap toDelete = ExecutingClient.ClientPlayer.Entity.CurrentMap;
             toDelete.Delete();
             SendExecutorMessage("§SMap Deleted.");
         }
@@ -72,7 +72,7 @@ namespace ZBase.Commands {
                 return;
             }
 
-            ExecutingClient.ClientPlayer.CurrentMap.Resize(new Vector3S(Convert.ToInt16(args[0]), Convert.ToInt16(args[1]), Convert.ToInt16(args[2])));
+            ExecutingClient.ClientPlayer.Entity.CurrentMap.Resize(new Vector3S(Convert.ToInt16(args[0]), Convert.ToInt16(args[1]), Convert.ToInt16(args[2])));
             SendExecutorMessage("§SMap Resized.");
         }
     }
@@ -89,7 +89,7 @@ namespace ZBase.Commands {
         }
 
         public override void Execute(string[] args) {
-            ExecutingClient.ClientPlayer.CurrentMap.Save();
+            ExecutingClient.ClientPlayer.Entity.CurrentMap.Save();
             SendExecutorMessage("§SMap saved.");
         }
     }
@@ -103,7 +103,7 @@ namespace ZBase.Commands {
         }
 
         public override void Execute(string[] args) {
-            ExecutingClient.ClientPlayer.CurrentMap.Resend();    
+            ExecutingClient.ClientPlayer.Entity.CurrentMap.Resend();    
         }
     }
 
@@ -115,7 +115,7 @@ namespace ZBase.Commands {
             MinRank = -1;
         }
         public override void Execute(string[] args) {
-            var yourMap = ExecutingClient.ClientPlayer.CurrentMap;
+            var yourMap = ExecutingClient.ClientPlayer.Entity.CurrentMap;
             SendExecutorMessage($"§SMap Name: {yourMap.ToString()}");
             SendExecutorMessage($"§SBuild Rank: {Rank.GetRank(yourMap.BuildRank)}");
             SendExecutorMessage($"§Show Rank: {Rank.GetRank(yourMap.Showrank)}");
@@ -154,13 +154,13 @@ namespace ZBase.Commands {
 
             switch (args[0].ToLower()) {
                 case "build":
-                    ExecutingClient.ClientPlayer.CurrentMap.BuildRank = (short)inputVal;
+                    ExecutingClient.ClientPlayer.Entity.CurrentMap.BuildRank = (short)inputVal;
                     break;
                 case "show":
-                    ExecutingClient.ClientPlayer.CurrentMap.Showrank = (short)inputVal;
+                    ExecutingClient.ClientPlayer.Entity.CurrentMap.Showrank = (short)inputVal;
                     break;
                 case "join":
-                    ExecutingClient.ClientPlayer.CurrentMap.Joinrank = (short)inputVal;
+                    ExecutingClient.ClientPlayer.Entity.CurrentMap.Joinrank = (short)inputVal;
                     break;
                 default:
                     SendExecutorMessage("§EUnknown permission '" + args[1] + "'.");

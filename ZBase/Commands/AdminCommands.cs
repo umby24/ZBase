@@ -40,7 +40,7 @@ namespace ZBase.Commands {
 
                 client.Kick(reason);
                 Chat.SendGlobalChat(
-                    $"§S{client.ClientPlayer.PrettyName} was kicked by {ExecutingClient.ClientPlayer.PrettyName}. ({reason})",
+                    $"§S{client.ClientPlayer.Entity.PrettyName} was kicked by {ExecutingClient.ClientPlayer.Entity.PrettyName}. ({reason})",
                     0, true);
             }
         }

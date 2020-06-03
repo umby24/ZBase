@@ -130,10 +130,10 @@ namespace ZBase.Commands {
 
             // -- Check if this player is online.
             Client thisPlayer = Server.RoClients.FirstOrDefault(a => String.Equals(a.ClientPlayer.Name, username, StringComparison.CurrentCultureIgnoreCase));
-            thisPlayer?.ClientPlayer.ReloadDb();
+            thisPlayer?.ClientPlayer.LoadDbInfo();
 
             if (thisPlayer != null)
-                Chat.SendClientChat($"§SYour rank was changed to {rnk.Name} ({rnkNumber}) by {ExecutingClient.ClientPlayer.PrettyName}.", 0, thisPlayer);
+                Chat.SendClientChat($"§SYour rank was changed to {rnk.Name} ({rnkNumber}) by {ExecutingClient.ClientPlayer.Entity.PrettyName}.", 0, thisPlayer);
         }
     }
 }

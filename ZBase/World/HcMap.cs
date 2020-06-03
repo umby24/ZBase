@@ -13,21 +13,38 @@ namespace ZBase.World {
     public class HcMap : TaskItem {
         public static HcMap DefaultMap { get; set; } // -- static main map
         public static Dictionary<string, HcMap> Maps { get; set; } // -- static list of all loaded maps.
+        public Entity[] Entities => GetEntities();
+
+        private Entity[] GetEntities() {
+            if (_entitiesCurrent)
+                return _entityCache;
+            
+            var result = new List<Entity>();
+            
+            lock (Entity.AllEntities) {
+                result.AddRange(Entity.AllEntities.Where(entity => entity.CurrentMap == this));
+            }
+
+            _entityCache = result.ToArray();
+            _entitiesCurrent = true;
+            return _entityCache;
+        }
 
         internal string Filename; // -- this maps physical location
-
-        // -- this map's format loader..
         internal IMapProvider MapProvider;
 
         private Stack<byte> _entityStack; // -- for entity IDs
         internal bool Loaded = true; // -- state flag
         private DateTime _lastClient; // -- used for loading/unloading..
+        
+        private Entity[] _entityCache;
+        private bool _entitiesCurrent;
         //private HypercubeMetadata _metadata; // -- CW meta
 
         // -- permissions..
         public short BuildRank, Showrank, Joinrank;
-
-        // -- Portals :>
+        
+                // -- Portals :>
         public TeleportArray Portals { get; set; }
 
         // -- Events Generated.
@@ -35,6 +52,7 @@ namespace ZBase.World {
         public event EntityEventArgs EntityCreated, EntityDestroyed;
         public event MapEventArgs Saved, Resized, MapLoaded, MapUnloaded;
         public event StringEventArgs MapChatSent;
+        
         #region Constructors
 
         /// <summary>
@@ -48,7 +66,7 @@ namespace ZBase.World {
             MapProvider = new ClassicWorldMapProvider();
             MapProvider.CreateNew(size, filename, mapName);
             Portals = new TeleportArray(MapProvider.GetSize());
-
+            
             BuildRank = 0;
             Showrank = 0;
             Joinrank = 0;
@@ -61,8 +79,6 @@ namespace ZBase.World {
             LoadStack();
             Loaded = true;
             _lastClient = DateTime.UtcNow;
-
-
         }
 
         /// <summary>
@@ -121,21 +137,28 @@ namespace ZBase.World {
             }
         }
 
-        public byte GetEntityId() {
+        private byte GetEntityId() {
             return _entityStack.Pop();
         }
 
-        public void ReturnEntityId(byte id) {
+        private void ReturnEntityId(byte id) {
             _entityStack.Push(id);
         }
 
         public void EntityAdd(Entity e) {
+            var yourId = (sbyte)GetEntityId();
+            e.ClientId = yourId;
+            _entitiesCurrent = false;
             EntityCreated?.Invoke(e);
         }
 
         public void EntityRemove(Entity e) {
+            ReturnEntityId((byte)e.ClientId);
+            e.ClientId = -1;
+            _entitiesCurrent = false;
             EntityDestroyed?.Invoke(e);
         }
+        
         #endregion
         #region Block Placement
 
@@ -152,14 +175,14 @@ namespace ZBase.World {
                 return;
             }
             MapProvider.SetBlocks(blockdata);
-            //sCwMap.BlockData = blockdata;
         }
+        
         /// <summary>
         /// Gets the ID of a block at the given location.
         /// </summary>
-        /// <param name="x">X Location of the block to retreive.</param>
-        /// <param name="z">Y Location of the block to retreive.</param>
-        /// <param name="y">Z Location of the block to retreive.</param>
+        /// <param name="x">X Location of the block to retrieve.</param>
+        /// <param name="z">Y Location of the block to retrieve.</param>
+        /// <param name="y">Z Location of the block to retrieve.</param>
         /// <returns>The blocktype for this location.</returns>
         public byte GetBlockId(short x, short y, short z) {
             if (!BlockInBounds(x, y, z))
@@ -221,11 +244,13 @@ namespace ZBase.World {
         }
 
         public void Delete() {
-            List<Entity> clientsToMove = Entity.AllEntities.Where(a => a.CurrentMap == this && a.AssoClient != null).ToList();
+            Client[] clientsToMove = Server.RoClients.Where(a =>
+                    a.ClientPlayer?.Entity != null && a.ClientPlayer.Entity.CurrentMap == this)
+                .ToArray();
 
-            foreach (Entity client in clientsToMove) {
-                client.AssoClient.ClientPlayer.ChangeMap(DefaultMap);
-                Chat.SendClientChat("§SThe map you were on was deleted.", 0, client.AssoClient);
+            foreach (Client client in clientsToMove) {
+                client.ClientPlayer.ChangeMap(DefaultMap);
+                Chat.SendClientChat("§SThe map you were on was deleted.", 0, client);
             }
 
             TaskScheduler.UnregisterTask($"Map save ({MapProvider.MapName})");
@@ -286,7 +311,7 @@ namespace ZBase.World {
         public void Load(string filename) {
             Filename = filename;
             MapProvider.Load(filename);
-            
+
             if (File.Exists(Filename + "_portals.json"))
             {
                 var teleporters =
@@ -300,7 +325,6 @@ namespace ZBase.World {
 
             _lastClient = DateTime.UtcNow;
             Loaded = true;
-
             Logger.Log(LogType.Info, $"Map {MapProvider.MapName} (by {MapProvider.CreatingUser}) loaded.");
             MapLoaded?.Invoke(this);
         }
@@ -346,7 +370,7 @@ namespace ZBase.World {
                 Logger.Log(LogType.Error, $"Error saving portals for {MapProvider.MapName}!");
             }
         }
-
+        
         public byte[][] GetChunks() {
             if (!Loaded)
                 Reload();
@@ -364,7 +388,7 @@ namespace ZBase.World {
 
             sendMap = GZip.Compress(sendMap); // -- Compress it
 
-            // -- Chunks the compressed map by chunks of 1024.
+            // -- Chunks the compresed map by chunks of 1024.
             var offset = 0;
             var chunks = new List<byte[]>();
 
@@ -391,14 +415,12 @@ namespace ZBase.World {
         }
 
         public void Resend() {
-            Entity[] entities;
+            var clientsToMove = Server.RoClients.Where(a =>
+                    a.ClientPlayer?.Entity != null && a.ClientPlayer.Entity.CurrentMap == this)
+                .ToArray();
 
-            lock (Entity.AllEntities) {
-                entities = Entity.AllEntities.Where(a => a.CurrentMap == this && a.AssoClient != null).ToArray();
-            }
-
-            foreach (Entity entity in entities) {
-                entity.AssoClient.ClientPlayer.ChangeMap(this);
+            foreach (Client c in clientsToMove) {
+                c.ClientPlayer.ChangeMap(this);
             }
         }
 

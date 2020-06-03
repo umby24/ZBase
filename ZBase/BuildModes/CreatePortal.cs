@@ -27,13 +27,14 @@ namespace ZBase.BuildModes {
                 SendExecutorMessage(Constants.InvalidNumArgumentsMessage);
                 return;
             }
-
-            ExecutingClient.ClientPlayer.SetBuildMode(Constants.AddPortalBuildModeName);
+            var bm = BuildModeManager.Instance.GetBuildmode(Constants.AddPortalBuildModeName);
+            ExecutingClient.ClientPlayer.CurrentState.CurrentMode = bm;
+            
             SendExecutorMessage("§SPlace two blocks to define the portal area.");
             var playerState = ExecutingClient.ClientPlayer.CurrentState;
 
             playerState.SetCoord(ExecutingClient.ClientPlayer.Entity.Location, 0); // -- Save the location of where to TP to as the current location.
-            playerState.Set(ExecutingClient.ClientPlayer.CurrentMap.MapProvider.MapName, 0); // -- and current map.
+            playerState.Set(ExecutingClient.ClientPlayer.Entity.CurrentMap.MapProvider.MapName, 0); // -- and current map.
             playerState.Set(0, 0); // -- Save a state flag to say no blocks have been set yet.
             playerState.Set(args[1], 1);
             // -- TODO: Maybe put build mode info in the bottom right with message types?
@@ -42,7 +43,7 @@ namespace ZBase.BuildModes {
         {
             if (args.Length == 2)
             { // -- Remove by name..
-                var found = ExecutingClient.ClientPlayer.CurrentMap.Portals.GetByName(args[1]);
+                var found = ExecutingClient.ClientPlayer.Entity.CurrentMap.Portals.GetByName(args[1]);
 
                 if (found == null)
                 {
@@ -50,12 +51,13 @@ namespace ZBase.BuildModes {
                     return;
                 }
 
-                ExecutingClient.ClientPlayer.CurrentMap.Portals.Remove(found.Name);
+                ExecutingClient.ClientPlayer.Entity.CurrentMap.Portals.Remove(found.Name);
                 SendExecutorMessage("§STeleporter deleted.");
                 return;
             }
 
-            ExecutingClient.ClientPlayer.SetBuildMode(Constants.DeletePortalBuildModeName);
+            var bm = BuildModeManager.Instance.GetBuildmode(Constants.DeletePortalBuildModeName);
+            ExecutingClient.ClientPlayer.CurrentState.CurrentMode = bm;
 
             SendExecutorMessage("§SDelete Portal Buildmode Started.");
             SendExecutorMessage("§SPlace a block inside a portal to delete it.");
@@ -104,7 +106,7 @@ namespace ZBase.BuildModes {
             var newLocation = new MinecraftLocation();
             newLocation.SetAsBlockCoords(location);
 
-            Teleporter matches = client.ClientPlayer.CurrentMap.Portals.GetPortal(newLocation); //Teleporter.Matches(location, client.ClientPlayer.CurrentMap.Teleporters);
+            Teleporter matches = client.ClientPlayer.Entity.CurrentMap.Portals.GetPortal(newLocation); //Teleporter.Matches(location, client.ClientPlayer.Entity.CurrentMap.Teleporters);
 
             if (matches == null)
             {
@@ -114,7 +116,7 @@ namespace ZBase.BuildModes {
             }
 
             Chat.SendClientChat($"§SPortal {matches.Name} deleted.", 0, client);
-            client.ClientPlayer.CurrentMap.Portals.Remove(matches.Name);
+            client.ClientPlayer.Entity.CurrentMap.Portals.Remove(matches.Name);
             client.ClientPlayer.CurrentState.CurrentMode = null;
             client.ClientPlayer.CurrentState.ResendBlocks(client);
         }
@@ -163,7 +165,7 @@ namespace ZBase.BuildModes {
             };
 
             // -- Check for existing teleporters of the same name:
-            Teleporter item = client.ClientPlayer.CurrentMap.Portals.GetByName(newTp.Name);
+            Teleporter item = client.ClientPlayer.Entity.CurrentMap.Portals.GetByName(newTp.Name);
 
             if (item != null)
             {
@@ -172,7 +174,7 @@ namespace ZBase.BuildModes {
                 return;
             }
 
-            client.ClientPlayer.CurrentMap.Portals.Create(newTp);
+            client.ClientPlayer.Entity.CurrentMap.Portals.Create(newTp);
             Chat.SendClientChat("§STeleporter Created.", 0, client);
             client.ClientPlayer.CurrentState.CurrentMode = null;
             client.ClientPlayer.CurrentState.ResendBlocks(client);

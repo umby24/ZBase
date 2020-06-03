@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ZBase.Common;
-using ZBase.Network;
 
 namespace ZBase.World {
     public class Entity {
@@ -17,65 +16,98 @@ namespace ZBase.World {
             }
             set {
                 if (_currentMap != null && value != _currentMap) {
+                    RemoveMapEvents();
                     _currentMap.EntityRemove(this); // -- Invoke map events..
                     value.EntityAdd(this);
                 }
 
                 _currentMap = value;
+                AddMapEvents();
             }
         }
 
         public Block HeldBlock { get; set; }
-        public Client AssoClient;
         public bool SendOwn;
 
         /// <summary>
         /// This event triggers when this entity moves, so any subscribed client will receive the update.
         /// </summary>
         public event EntityEventArgs EntityMoved;
-
-
+        /// <summary>
+        /// This event triggers when this entity changes its held block, to broadcast to subbed clients.
+        /// </summary>
+        public event EntityEventArgs HeldBlockChanged;
+        /// <summary>
+        /// This event is triggered when an entity visible to this entity moves.
+        /// </summary>
+        public event EntityEventArgs OtherEntityMoved;
+        /// <summary>
+        /// This event is triggered when an entity visible to this entity changes their held block.
+        /// </summary>
+        public event EntityEventArgs OtherEntityHeldBlockChange;
+        /// <summary>
+        /// This event is triggered when a newly visible entity has been created.
+        /// </summary>
+        public event EntityEventArgs OnEntitySpawned;
+        /// <summary>
+        /// This event is triggered when a visible entity is being removed.
+        /// </summary>
+        public event EntityEventArgs OnEntityDespawned;
+        
         public Entity() {
             SendOwn = true;
         }
 
-        public Entity(Client c) {
-            AssoClient = c;
-            SendOwn = true;
+        private void RemoveMapEvents() {
+            // -- Deregister events
+            var currentEntities = _currentMap.Entities;
+            foreach (Entity entity in currentEntities) {
+                entity.EntityMoved -= HandleVisibleEntityMoved;
+            }
+
+            CurrentMap.EntityCreated -= CurrentMapOnEntityCreated;
+            CurrentMap.EntityDestroyed -= CurrentMapOnEntityDestroyed;
         }
 
+        private void AddMapEvents() {
+            CurrentMap.EntityCreated += CurrentMapOnEntityCreated;
+            CurrentMap.EntityDestroyed += CurrentMapOnEntityDestroyed;
+
+            var visibleEntities = _currentMap.Entities;
+            foreach (Entity entity in visibleEntities) {
+                entity.EntityMoved += HandleVisibleEntityMoved;
+            }
+        }
+        
         public void Spawn() {
             lock (AllEntities) {
                 AllEntities.Add(this);
             }
             
-            foreach (var client in Server.RoClients) {
-                if (client.Verified == false)
-                    continue;
-
-                if (client.ClientPlayer.CurrentMap != _currentMap)
-                    continue;
-
-                client.ClientPlayer.SpawnEntity(this);
-            }
+            CurrentMap.EntityAdd(this);
         }
-
-
+        
         public void Despawn() {
             lock (AllEntities) {
                 AllEntities.Remove(this);
             }
+            RemoveMapEvents();
+            // -- Trigger others to remove us.
+            CurrentMap.EntityRemove(this);
+        }
+        
+        private void HandleVisibleEntityMoved(Entity e) {
+            OtherEntityMoved?.Invoke(e);
+        }
 
-            foreach (Client client in Server.RoClients) {
-                if (client.Verified == false)
-                    continue;
-                if (client.ClientPlayer.CurrentMap != _currentMap)
-                    continue;
+        private void CurrentMapOnEntityDestroyed(Entity e) {
+            e.EntityMoved -= HandleVisibleEntityMoved;
+            OnEntityDespawned?.Invoke(e);
+        }
 
-                client.ClientPlayer.DespawnEntity(this);
-            }
-
-            CurrentMap.ReturnEntityId((byte)ClientId);
+        private void CurrentMapOnEntityCreated(Entity e) {
+            e.EntityMoved += HandleVisibleEntityMoved;
+            OnEntitySpawned?.Invoke(e);
         }
 
         public void HandleMove() {

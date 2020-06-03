@@ -231,7 +231,7 @@ namespace ZBase {
   //              page += "\t\t\t\t<td>" + map.HCSettings.History + "</td>\n";
   //              page += "\t\t\t\t<td>" + map.PhysicsQueue.Count + "</td>\n";
   //              page += "\t\t\t\t<td>" + map.BlockchangeQueue.Count + "</td>\n";
-                page += "\t\t\t\t<td>" + Server.RoClients.Count(a => a.ClientPlayer != null && a.ClientPlayer.CurrentMap == map) + "</td>\n";
+                page += "\t\t\t\t<td>" + Server.RoClients.Count(a => a.ClientPlayer != null && a.ClientPlayer.Entity.CurrentMap == map) + "</td>\n";
                 page += "\t\t\t</tr>\n";
             }
 
@@ -262,7 +262,7 @@ namespace ZBase {
                 //page += "\t\t\t\t<td>" + client.IsCpe + "</td>\n";
                 //page += "\t\t\t\t<td>" + client.App + "</td>\n";
                 //page += "\t\t\t\t<td>" + client.ExtensionsCount + "</td>\n";
-                page += "\t\t\t\t<td>" + client.ClientPlayer.CurrentMap.MapProvider.MapName + "</td>\n";
+                page += "\t\t\t\t<td>" + client.ClientPlayer.Entity.CurrentMap.MapProvider.MapName + "</td>\n";
                 page += "\t\t\t\t<td>" + client.ClientPlayer.Entity.ClientId + "</td>\n";// + "(" + client.CS.MyEntity.ClientId + ")" + "</td>\n";
                 page += "\t\t\t\t<td>" + client.SendBuffer.Length + "</td>\n";
                 page += "\t\t\t</tr>\n";

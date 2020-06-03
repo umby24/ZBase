@@ -36,9 +36,9 @@ namespace ZBase.Commands {
 
             // -- Log the command usage
             if (!Configuration.Settings.General.LogArguments)
-                Logger.Log(LogType.Command, $"Player '{c.ClientPlayer.PrettyName}&f' used command '{command}'");
+                Logger.Log(LogType.Command, $"Player '{c.ClientPlayer.Entity.PrettyName}&f' used command '{command}'");
             else
-                Logger.Log(LogType.Command, $"Player '{c.ClientPlayer.PrettyName}&f' used command '{command}' (\"{string.Join("\", \"", splits)}\")");
+                Logger.Log(LogType.Command, $"Player '{c.ClientPlayer.Entity.PrettyName}&f' used command '{command}' (\"{string.Join("\", \"", splits)}\")");
 
             Command toExecute;
 

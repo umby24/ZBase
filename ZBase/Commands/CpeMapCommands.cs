@@ -16,7 +16,7 @@
     //            return;
     //        }
 
-    //        HackPermissions currentPerms = c.ClientPlayer.CurrentMap.Permissions;
+    //        HackPermissions currentPerms = c.ClientPlayer.Entity.CurrentMap.Permissions;
 
     //        switch (args[0].ToLower()) {
     //            case "fly":
@@ -49,7 +49,7 @@
     //                return;
     //        }
 
-    //        c.ClientPlayer.CurrentMap.SetHackPermissions(currentPerms);
+    //        c.ClientPlayer.Entity.CurrentMap.SetHackPermissions(currentPerms);
     //        Chat.SendClientChat("§SHack permissions set.", 0, c);
     //    }
 
@@ -84,7 +84,7 @@
 
     //    public override void Execute(Client c, string[] args) {
     //        if (args.Length != 1) {
-    //            c.ClientPlayer.CurrentMap.MapTexturePack = " ";
+    //            c.ClientPlayer.Entity.CurrentMap.MapTexturePack = " ";
     //            Chat.SendClientChat("§STexture reset.", 0, c);
     //            return;
     //        }
@@ -94,8 +94,8 @@
     //            return;
     //        }
 
-    //        c.ClientPlayer.CurrentMap.MapTexturePack = args[0];
-    //        c.ClientPlayer.CurrentMap.Resend();
+    //        c.ClientPlayer.Entity.CurrentMap.MapTexturePack = args[0];
+    //        c.ClientPlayer.Entity.CurrentMap.Resend();
     //        Chat.SendClientChat("§STexture set.", 0, c);
     //    }
     //}
@@ -113,7 +113,7 @@
 
     //    public override void Execute(Client executingClient, string[] args) {
     //        if (args.Length != 1) {
-    //            executingClient.ClientPlayer.CurrentMap.SetWeather(WeatherType.Sunny);
+    //            executingClient.ClientPlayer.Entity.CurrentMap.SetWeather(WeatherType.Sunny);
     //            Chat.SendClientChat("§SWeather reset.", 0, executingClient);
     //            return;
     //        }
@@ -121,13 +121,13 @@
     //        switch (args[0].ToLower()) {
     //            case "sun":
     //            case "sunny":
-    //                executingClient.ClientPlayer.CurrentMap.SetWeather(WeatherType.Sunny);
+    //                executingClient.ClientPlayer.Entity.CurrentMap.SetWeather(WeatherType.Sunny);
     //                break;
     //            case "snow":
-    //                executingClient.ClientPlayer.CurrentMap.SetWeather(WeatherType.Snowing);
+    //                executingClient.ClientPlayer.Entity.CurrentMap.SetWeather(WeatherType.Snowing);
     //                break;
     //            case "rain":
-    //                executingClient.ClientPlayer.CurrentMap.SetWeather(WeatherType.Raining);
+    //                executingClient.ClientPlayer.Entity.CurrentMap.SetWeather(WeatherType.Raining);
     //                break;
     //            default:
     //                Chat.SendClientChat($"§EUnknown weather type: {args[0]}", 0, executingClient);
@@ -194,12 +194,12 @@
     //            return;
     //        }
 
-    //        if (executingClient.ClientPlayer.CurrentMap.EnvColors == null) {
-    //            executingClient.ClientPlayer.CurrentMap.ResetEnviromentColors();
+    //        if (executingClient.ClientPlayer.Entity.CurrentMap.EnvColors == null) {
+    //            executingClient.ClientPlayer.Entity.CurrentMap.ResetEnviromentColors();
     //        }
 
     //        var colorRef =
-    //            executingClient.ClientPlayer.CurrentMap.EnvColors.FirstOrDefault(
+    //            executingClient.ClientPlayer.Entity.CurrentMap.EnvColors.FirstOrDefault(
     //                a => a.ColorType == (EnviromentColorType) type);
 
     //        if (colorRef == null) {
@@ -210,7 +210,7 @@
     //        colorRef.Red = (short)red;
     //        colorRef.Green = (short)green;
     //        colorRef.Blue = (short)blue;
-    //        executingClient.ClientPlayer.CurrentMap.ResendColors();
+    //        executingClient.ClientPlayer.Entity.CurrentMap.ResendColors();
     //        Chat.SendClientChat("§SNew colors applied.", 0, executingClient);
     //    }
     //}

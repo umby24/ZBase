@@ -46,6 +46,36 @@ namespace ZBase.Network {
             };
         }
 
+        public static IPacket CreateTeleport(MinecraftLocation location, sbyte clientId) {
+            return new PlayerTeleport { // -- It's less math and hassle to just send a teleport instead of anything else.
+                Location = location,
+                PlayerId = clientId
+            };    
+        }
+
+        public static IPacket CreateSpawnPlayer(MinecraftLocation location, sbyte clientId, string name) {
+            return new SpawnPlayer {
+                Location = location,
+                PlayerId = clientId,
+                PlayerName = name
+            };
+        }
+
+        public static IPacket CreateDespawnPlayer(sbyte clientId) {
+            return new DespawnPlayer {
+                PlayerId = clientId
+            };
+        }
+        
+        public static IPacket CreateSetBlockServer(Vector3S location, byte type) {
+            return new SetBlockServer {
+                X = location.X,
+                Y = location.Y,
+                Z = location.Z,
+                Block = type
+            };
+        }
+        
         public static IPacket CreateDisconnect(string reason) {
             return new Disconnect { Reason = reason };
         }

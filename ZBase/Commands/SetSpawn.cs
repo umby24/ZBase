@@ -1,5 +1,4 @@
 ﻿using ZBase.Common;
-using ZBase.Network;
 
 namespace ZBase.Commands {
     public class SetSpawn : Command {
@@ -16,7 +15,7 @@ namespace ZBase.Commands {
                 return;
             }
 
-            ExecutingClient.ClientPlayer.CurrentMap.SetSpawn(ExecutingClient.ClientPlayer.Entity.Location.GetAsBlockCoords(), ExecutingClient.ClientPlayer.Entity.Location.Look,
+            ExecutingClient.ClientPlayer.Entity.CurrentMap.SetSpawn(ExecutingClient.ClientPlayer.Entity.Location.GetAsBlockCoords(), ExecutingClient.ClientPlayer.Entity.Location.Look,
                 ExecutingClient.ClientPlayer.Entity.Location.Rotation);
 
             SendExecutorMessage("§SSpawn location updated.");

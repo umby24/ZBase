@@ -20,7 +20,7 @@ namespace ZBase.Commands {
 				return;
 			}
 
-			var toTp = ExecutingClient.ClientPlayer.Entities.Where (a => String.Equals(a.Name, args [0], StringComparison.CurrentCultureIgnoreCase)).ToArray();
+			var toTp = Entity.AllEntities.Where(a => String.Equals(a.Name, args [0], StringComparison.CurrentCultureIgnoreCase)).ToArray();
 
 			if (toTp.Length == 0) {
 				SendExecutorMessage($"§EUnable to find a player called {args[0]}");

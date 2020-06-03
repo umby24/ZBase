@@ -238,15 +238,15 @@ namespace ZBase.Network {
         public static byte Id => 8;
         public int PacketLength => 10;
         public sbyte PlayerId { get; set; }
-        public Vector3S Location { get; set; }
-        public byte Yaw { get; set; }
-        public byte Pitch { get; set; }
-
+        public MinecraftLocation Location { get; set; }
         public void Read(ByteBuffer buf) {
             PlayerId = (sbyte) buf.ReadByte();
-            Location = new Vector3S { X = buf.ReadShort(), Z = buf.ReadShort(), Y = buf.ReadShort() };
-            Yaw = buf.ReadByte();
-            Pitch = buf.ReadByte();
+            var x = buf.ReadShort();
+            var z = buf.ReadShort();
+            var y = buf.ReadShort();
+            var look = buf.ReadByte();
+            var rot = buf.ReadByte();
+            Location = new MinecraftLocation(new Vector3S(x, y, z), rot, look);
         }
 
         public void Write(ByteBuffer buf) {
@@ -255,13 +255,13 @@ namespace ZBase.Network {
             buf.WriteShort(Location.X);
             buf.WriteShort(Location.Z);
             buf.WriteShort(Location.Y);
-            buf.WriteByte(Yaw);
-            buf.WriteByte(Pitch);
+            buf.WriteByte(Location.Look);
+            buf.WriteByte(Location.Rotation);
             buf.Purge();
         }
 
         public void Handle(Client c) {
-			c.ClientPlayer.HandleMove(Location, Yaw, Pitch);
+			c.ClientPlayer.HandleMove(Location);
         }
     }
 

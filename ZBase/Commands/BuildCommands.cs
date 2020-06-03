@@ -20,10 +20,10 @@ namespace ZBase.Commands {
             var blockPos = ExecutingClient.ClientPlayer.Entity.GetBlockCoords();
             blockPos.Z -= 1;
 
-            if (!ExecutingClient.ClientPlayer.CurrentMap.BlockInBounds(blockPos.X, blockPos.Y, blockPos.Z))
+            if (!ExecutingClient.ClientPlayer.Entity.CurrentMap.BlockInBounds(blockPos.X, blockPos.Y, blockPos.Z))
                 return;
 
-            ExecutingClient.ClientPlayer.CurrentMap.SetBlockId(blockPos.X, blockPos.Y, blockPos.Z,
+            ExecutingClient.ClientPlayer.Entity.CurrentMap.SetBlockId(blockPos.X, blockPos.Y, blockPos.Z,
                 ExecutingClient.ClientPlayer.LastMaterial.OnClient);
 
             SendExecutorMessage("§SBlock placed.");

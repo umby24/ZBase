@@ -21,7 +21,7 @@ namespace ZBase.Network {
         public bool Verified { get; set; } // -- True if this is a minecraft client that has been negotiated with us.
 
         public readonly ByteBuffer SendBuffer; // -- The send buffer
-        public ConcurrentQueue<SetBlockServer> BlockChanges { get; set; }
+        public ConcurrentQueue<IPacket> BlockChanges { get; set; }
         // -- Events
         // -- Connected / Disconnected
         // -- DataRecv, DataSent, Packet Handled.
@@ -43,7 +43,7 @@ namespace ZBase.Network {
             _receiveBuffer = new ByteBuffer();
             SendBuffer = new ByteBuffer();
             _socket = new ClientSocket();
-            BlockChanges = new ConcurrentQueue<SetBlockServer>();
+            BlockChanges = new ConcurrentQueue<IPacket>();
             PopulatePackets();
 
             // -- Register events
@@ -86,9 +86,7 @@ namespace ZBase.Network {
                 return;
             
             for (var i = 0; i < 10; i++) { // -- If there are queued block changes, write out up to 10 of them at a time to allow other items to have a higher priority..
-                SetBlockServer packet;
-
-                if (BlockChanges.TryDequeue(out packet)) {
+                if (BlockChanges.TryDequeue(out IPacket packet)) {
                     packet.Write(SendBuffer);
                 }
             }
@@ -154,7 +152,7 @@ namespace ZBase.Network {
         /// <param name="reason">The reason for the kick.</param>
         public void Kick(string reason) { 
 			SendPacket (PacketCreator.CreateDisconnect(reason));
-            Logger.Log(LogType.Info, Verified ? $"{ClientPlayer.Name} kicked. ({reason})" : $"{Ip} kicked. ({reason})");
+            Logger.Log(LogType.Info, Verified ? $"{ClientPlayer.Entity.PrettyName} kicked. ({reason})" : $"{Ip} kicked. ({reason})");
             _disconnectOnSend = true;
         //    Shutdown();
         }

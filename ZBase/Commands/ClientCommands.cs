@@ -10,7 +10,7 @@ namespace ZBase.Commands {
             MinRank = -1;
         }
         public override void Execute(string[] args) {
-            SendExecutorMessage($"§SHello {ExecutingClient.ClientPlayer.PrettyName}!");
+            SendExecutorMessage($"§SHello {ExecutingClient.ClientPlayer.Entity.PrettyName}!");
             //Chat.SendClientChat($"§SYou are running {c.App} supporting {c.ExtensionsCount} CPE Extensions.", 0, c);
             //Chat.SendClientChat($"§SExtensions:&f {string.Join(" §D ", c.Extensions.Keys)}", 0, c);
         }

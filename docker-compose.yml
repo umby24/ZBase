@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  server:
+    image: zbase
+    container_name: "zbase"
+    volumes:
+      - ./serverfiles/Config:/app/Config
+      - ./serverfiles/Maps:/app/Maps
+      - ./serverfiles/D3Maps:/app/D3Maps
+      - ./serverfiles/HTML:/app/HTML
+      - ./serverfiles/Plugins:/app/Plugins
+    ports: 
+      - 25565:25565
