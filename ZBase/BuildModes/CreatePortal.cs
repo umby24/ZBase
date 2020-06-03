@@ -110,17 +110,16 @@ namespace ZBase.BuildModes {
 
             if (matches == null) {
                 SendExecutorMessage("§EThere is no portal here.");
-                ExecutingClient.ClientPlayer.CurrentState.ResendBlocks(ExecutingClient);
+                PlayerState.ResendBlocks(ExecutingClient);
                 return;
             }
 
             SendExecutorMessage($"§SPortal {matches.Name} deleted.");
             ExecutingClient.ClientPlayer.Entity.CurrentMap.Portals.Remove(matches.Name);
-            ExecutingClient.ClientPlayer.CurrentState.CurrentMode = null;
-            ExecutingClient.ClientPlayer.CurrentState.ResendBlocks(ExecutingClient);
+            PlayerState.CurrentMode = null;
+            PlayerState.ResendBlocks(ExecutingClient);
         }
     }
-
     public class CreatePortal : BuildMode
     {
 
@@ -129,25 +128,24 @@ namespace ZBase.BuildModes {
             Name = Constants.AddPortalBuildModeName;
         }
 
-        public override void Invoke(Vector3S location, byte mode, Block block)
-        {
+        public override void Invoke(Vector3S location, byte mode, Block block) {
             if (mode == 0)
                 return;
 
-            int state = ExecutingClient.ClientPlayer.CurrentState.GetInt(0);
+            var state = PlayerState.GetInt(0);
             if (state == 0)
             {
                 var newLocation = new MinecraftLocation();
                 newLocation.SetAsBlockCoords(location);
 
-                ExecutingClient.ClientPlayer.CurrentState.SetCoord(newLocation, 1);
-                ExecutingClient.ClientPlayer.CurrentState.Set(1, 0);
+                PlayerState.SetCoord(newLocation, 1);
+                PlayerState.Set(1, 0);
                 return;
             }
 
-            var dest = ExecutingClient.ClientPlayer.CurrentState.GetCoord(0);
-            var map = ExecutingClient.ClientPlayer.CurrentState.GetString(0);
-            var firstBlock = ExecutingClient.ClientPlayer.CurrentState.GetCoord(1);
+            MinecraftLocation dest = PlayerState.GetCoord(0);
+            var map = PlayerState.GetString(0);
+            MinecraftLocation firstBlock = PlayerState.GetCoord(1);
 
             var oEnd = new MinecraftLocation();
             oEnd.SetAsBlockCoords(location);
@@ -156,7 +154,7 @@ namespace ZBase.BuildModes {
 
             var newTp = new Teleporter
             {
-                Name = ExecutingClient.ClientPlayer.CurrentState.GetString(1),
+                Name = PlayerState.GetString(1),
                 Destination = dest,
                 DestinationMap = map,
                 OriginEnd = oEnd,
@@ -169,14 +167,14 @@ namespace ZBase.BuildModes {
             if (item != null)
             {
                 SendExecutorMessage("§SA teleporter with that name already exists in this map.");
-                ExecutingClient.ClientPlayer.CurrentState.ResendBlocks(ExecutingClient);
+                PlayerState.ResendBlocks(ExecutingClient);
                 return;
             }
 
             ExecutingClient.ClientPlayer.Entity.CurrentMap.Portals.Create(newTp);
             SendExecutorMessage("§STeleporter Created.");
-            ExecutingClient.ClientPlayer.CurrentState.CurrentMode = null;
-            ExecutingClient.ClientPlayer.CurrentState.ResendBlocks(ExecutingClient);
+            PlayerState.CurrentMode = null;
+            PlayerState.ResendBlocks(ExecutingClient);
         }
     }
 }
