@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using ZBase.Network;
 using ZBase.World;
 
@@ -6,10 +7,15 @@ namespace ZBaseConsole {
     class Program {
         static void Main(string[] args) {
             ZBase.Main.Start();
-
+            
             string input;
             while (true) {
                 input = Console.ReadLine();
+
+                if (input == null) {
+                    NoInputMode();
+                    break;
+                }
                 
                 if (input.ToLower() == "q")
                     break;
@@ -21,7 +27,18 @@ namespace ZBaseConsole {
             ZBase.Main.Stop();
             Console.ReadKey();
         }
+        static void NoInputMode() {
+            bool running = true;
+            
+            Console.CancelKeyPress += delegate {
+                running = false;
+            };
 
+            while (running) {
+                Thread.Sleep(1);
+            }
+        }
+        
         static void HandleInput(string input) {
             if (!input.StartsWith("/")) {
                 Chat.SendGlobalChat("&c[CONSOLE]&f: " + input, 0);

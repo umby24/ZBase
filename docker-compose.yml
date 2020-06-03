@@ -4,11 +4,13 @@ services:
   server:
     image: zbase
     container_name: "zbase"
+    user: root
     volumes:
-      - ./serverfiles/Config:/app/Config
-      - ./serverfiles/Maps:/app/Maps
-      - ./serverfiles/D3Maps:/app/D3Maps
-      - ./serverfiles/HTML:/app/HTML
-      - ./serverfiles/Plugins:/app/Plugins
+      - ./serverfiles/Config:/app/Config:z
+      - ./serverfiles/Maps:/app/Maps:z
+      - ./serverfiles/D3Maps:/app/D3Maps:z
+      - ./serverfiles/HTML:/app/HTML:z
+      - ./serverfiles/Plugins:/app/Plugins:z
     ports: 
       - 25565:25565
+    command: sleep 500

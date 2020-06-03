@@ -17,7 +17,7 @@ namespace ZBase.Common {
 
         public DateTime LastModified;
 
-        private static readonly string ConfigPath = Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Config.json");
+        private static readonly string ConfigPath = Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Config", "Config.json");
 
         public Configuration() {
             Network = new NetworkSettings();
