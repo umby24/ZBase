@@ -18,11 +18,10 @@ using TaskScheduler = ZBase.Common.TaskScheduler;
  * Permissions
  * Physics??
  * How should I do blocks??
- * Building assistance commands (/box, /line, etc) -> Inside plugins, or server?
  * Administrative commands (world history, etc)
  * Block send Queues, per player.. (*)
  * Update GUI and CLI to be fully featured
- * portals? Zones? (*)
+ * Zones? (*)
  * Reboustify things
  * Copy in some D3 Features.. (Configurable file paths, backup times per-map, (*)
  */

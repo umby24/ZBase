@@ -3,6 +3,8 @@ namespace ZBase.Building {
         public const string BoxBuildModeName = "Box";
         public const string LineBuildModeName = "Line";
         public const string SphereBuildModeName = "Sphere";
+        public const string BrushBuildModeName = "Brush";
+        
         public const string InvalidBlockType = "§EInvalid block type.";
     }
 }

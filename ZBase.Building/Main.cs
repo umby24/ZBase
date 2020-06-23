@@ -21,11 +21,13 @@ namespace ZBase.Building {
                 BuildModeManager.Instance.RegisterBuildMode(new Line());
                 BuildModeManager.Instance.RegisterBuildMode(new Box());
                 BuildModeManager.Instance.RegisterBuildMode(new Sphere());
+                BuildModeManager.Instance.RegisterBuildMode(new Brush());
                 CommandHandler.RegisterCommand(new Commands.Box());
                 CommandHandler.RegisterCommand(new Commands.HBox());
                 CommandHandler.RegisterCommand(new Commands.Line());
                 CommandHandler.RegisterCommand(new Commands.Sphere());
                 CommandHandler.RegisterCommand(new Commands.HSphere());
+                CommandHandler.RegisterCommand(new Commands.Brush());
             });
         }
 

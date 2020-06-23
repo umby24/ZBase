@@ -199,6 +199,11 @@ namespace ZBase.World {
         public byte GetBlockId(Vector3S location) {
             return GetBlockId(location.X, location.Y, location.Z);
         }
+
+        public void SetBlockId(Vector3S location, byte type) {
+            SetBlockId(location.X, location.Y, location.Z, type);
+        }
+        
         /// <summary>
         /// Sets the block at the given location, and optionally records map history.
         /// </summary>
