@@ -1,10 +1,14 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using ZBase.Building.BuildModes;
+using ZBase.Building.Commands;
 using ZBase.BuildModes;
 using ZBase.Commands;
 using ZBase.Common;
+using Box = ZBase.Building.BuildModes.Box;
+using Brush = ZBase.Building.BuildModes.Brush;
+using Line = ZBase.Building.BuildModes.Line;
+using Paint = ZBase.Building.BuildModes.Paint;
+using Sphere = ZBase.Building.BuildModes.Sphere;
 
 namespace ZBase.Building {
     public class Main : ZBasePlugin {
@@ -16,18 +20,34 @@ namespace ZBase.Building {
         }
         
         public override void PluginInit() {
+            var buildModes = new BuildMode[] {
+                new Line(),
+                new Box(),
+                new Sphere(),
+                new Brush(),
+                new Paint()
+            };
+
+            var commands = new Command[] {
+                new Commands.Box(),
+                new HBox(),
+                new Commands.Sphere(),
+                new Commands.Line(),
+                new Commands.Sphere(),
+                new HSphere(),
+                new Commands.Brush(),
+                new Commands.Paint(),
+            };
+            
             Task.Run(() => {
                 Thread.Sleep(1000);
-                BuildModeManager.Instance.RegisterBuildMode(new Line());
-                BuildModeManager.Instance.RegisterBuildMode(new Box());
-                BuildModeManager.Instance.RegisterBuildMode(new Sphere());
-                BuildModeManager.Instance.RegisterBuildMode(new Brush());
-                CommandHandler.RegisterCommand(new Commands.Box());
-                CommandHandler.RegisterCommand(new Commands.HBox());
-                CommandHandler.RegisterCommand(new Commands.Line());
-                CommandHandler.RegisterCommand(new Commands.Sphere());
-                CommandHandler.RegisterCommand(new Commands.HSphere());
-                CommandHandler.RegisterCommand(new Commands.Brush());
+                foreach (BuildMode mode in buildModes) {
+                    BuildModeManager.Instance.RegisterBuildMode(mode);
+                }
+
+                foreach (Command command in commands) {
+                    CommandHandler.RegisterCommand(command);
+                }
             });
         }
 

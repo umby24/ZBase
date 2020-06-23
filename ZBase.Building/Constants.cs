@@ -4,6 +4,7 @@ namespace ZBase.Building {
         public const string LineBuildModeName = "Line";
         public const string SphereBuildModeName = "Sphere";
         public const string BrushBuildModeName = "Brush";
+        public const string PaintBuildModeName = "Paint";
         
         public const string InvalidBlockType = "§EInvalid block type.";
     }
