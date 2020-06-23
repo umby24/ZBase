@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ZBase.Common;
+using ZBase.World;
 
 namespace ZBase.Building.BuildModes {
     public class Brush : BuildMode {
@@ -20,62 +22,67 @@ namespace ZBase.Building.BuildModes {
             // -- Finally, you iterate just the brush size in each direction. If the block at that offset is air, and the value in the 3d array is >1, we place a block there.
             // -- because the extranous things arn't used and are purely an entropy introducer... im gonna do this to try and simply it.
             
-            var currentMap = ExecutingClient.ClientPlayer.Entity.CurrentMap;
+            HcMap currentMap = ExecutingClient.ClientPlayer.Entity.CurrentMap;
             var myArray = Build3dArray(brushSize);
-            
-            for (var ix = -brushSize-2; ix < brushSize +2; ix++) {
-                for (var iy = -brushSize-2; iy < brushSize +2; iy++) {
-                    for (var iz = -brushSize-2; iz < brushSize +2; iz++) {
-                        var blockCoord = new Vector3S(location.X + ix, location.Y + iy, location.Z + iz);
-                        var blockType = currentMap.GetBlockId(blockCoord);
-                        
-                        if ((mode == 1 && blockType > 0) || (mode == 0 && blockType == 0)) {
-                            var entf = MathF.Sqrt((ix * ix) + (iy * iy) + (iz * iz));
-                            if (entf <= brushSize) {
-                                for (var iix = -2; iix < 2; iix++) {
-                                    for (var iiy = -2; iiy < 2; iiy++) {
-                                        for (var iiz = -2; iiz < 2; iiz++) {
-                                            var myCoord = new Vector3S(ix+iix, iy+iiy, iz+iiz);
-                                            myArray[myCoord] = myArray[myCoord] + myRandom.Next(100) / 250f;
-                                        }
-                                    }
-                                }        
-                            }
-                        } 
-                    }
+
+            var buildArray = BuildVectorArray(brushSize + 1);
+
+            foreach (Vector3S position in buildArray) {
+                var blockCoord = new Vector3S(location.X + position.X, location.Y + position.Y, location.Z + position.Z);
+                var blockType = currentMap.GetBlockId(blockCoord);
+
+                if ((mode != 1 || blockType <= 0) && (mode != 0 || blockType != 0)) 
+                    continue;
+                
+                var entf = MathF.Sqrt((position.X * position.X) + (position.Y * position.Y) + (position.Z * position.Z));
+
+                if (!(entf <= brushSize)) 
+                    continue;
+
+                var innerArray = BuildVectorArray(2);
+                
+                foreach (Vector3S pos in innerArray) {
+                    var arrayCoord =new Vector3S(pos.X+position.X, pos.Y+position.Y, pos.Z+position.Z);
+                    myArray[arrayCoord] = myArray[arrayCoord] + myRandom.Next(100) / 250f;
                 }
             }
 
-            for (var ix = -brushSize-1; ix < brushSize+1; ix++) {
-                for (var iy = -brushSize-1; iy < brushSize+1; iy++) {
-                    for (var iz = -brushSize-1; iz < brushSize+1; iz++) {
-                        var myCoord = new Vector3S(ix, iy, iz);
-                        if (myArray[myCoord] > 1) {
-                            var blockLocation = new Vector3S(location.X + ix, location.Y+iy, location.Z+iz);
-                            var blockType = currentMap.GetBlockId(blockLocation);
-                            if (mode == 1 && blockType == 0) {
-                                currentMap.SetBlockId(blockLocation, block.Id);
-                            } else if (mode == 0 && (block.Id == blockType || block.Id == 3 && blockType == 2)) {
-                                currentMap.SetBlockId(blockLocation, 0);
-                            }
-                        }
-                    }
+
+            var placeArray = BuildVectorArray(brushSize);
+            
+            foreach (Vector3S position in placeArray) {
+                if (!(myArray[position] > 1)) 
+                    continue;
+                
+                var blockLocation = new Vector3S(location.X + position.X, location.Y+position.Y, location.Z+position.Z);
+                var blockType = currentMap.GetBlockId(blockLocation);
+                
+                if (mode == 1 && blockType == 0) {
+                    currentMap.SetBlockId(blockLocation, block.Id);
+                } else if (mode == 0 && (block.Id == blockType || block.Id == 3 && blockType == 2)) {
+                    currentMap.SetBlockId(blockLocation, 0);
                 }
             }
         }
 
-        static Dictionary<Vector3S, float> Build3dArray(int brushSize) {
-            var result = new Dictionary<Vector3S, float>();
+        public static Vector3S[] BuildVectorArray(int bounds) {
+            var result = new List<Vector3S>();
             
-            for (var ix = -brushSize - 3; ix < brushSize + 3; ix++) {
-                for (var iy = -brushSize - 3; iy < brushSize + 3; iy++) {
-                    for (var iz = -brushSize - 3; iz < brushSize + 3; iz++) {
-                        result.Add(new Vector3S(ix, iy, iz), 0.0f);
+            for (var ix = -bounds; ix <= bounds; ix++) {
+                for (var iy = -bounds; iy <= bounds; iy++) {
+                    for (var iz = -bounds; iz <= bounds; iz++) {
+                        result.Add(new Vector3S(ix, iy, iz));
                     }
-                }
+                }    
             }
 
-            return result;
+            return result.ToArray();
+        }
+        
+        public static Dictionary<Vector3S, float> Build3dArray(int brushSize) {
+            var vectorArray = BuildVectorArray(brushSize + 2);
+
+            return vectorArray.ToDictionary(item => item, item => 0.0f);
         }
     }
 }
