@@ -7,7 +7,7 @@ namespace ZBase.Building.Commands {
             CommandString = "hbox";
             MinRank = 50;
             Group = "Building";
-            Description = "Usage: /hbox [material] [name]<br>" +
+            Description = "Usage: /hbox [material]<br>" +
                           "§SFill in an area with blocks and a hollow center<br>" +
                           "§SOptionally replace only a material";
         }
@@ -42,7 +42,7 @@ namespace ZBase.Building.Commands {
             CommandString = "box";
             MinRank = 50;
             Group = "Build";
-            Description = "Usage: /box [material] [name]<br>" +
+            Description = "Usage: /box [material]<br>" +
                           "Fill in an area with blocks<br>" +
                           "Optionally replace only a material";
         }

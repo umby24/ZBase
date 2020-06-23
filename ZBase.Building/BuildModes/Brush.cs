@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using ZBase.Building.Types;
 using ZBase.Common;
 
 namespace ZBase.Building.BuildModes {

@@ -34,12 +34,12 @@ namespace ZBase.Building.BuildModes {
             var radius = Math.Sqrt(Math.Pow(location.X - firstLocation.X, 2) +
                                    Math.Pow(location.Y - firstLocation.Y, 2) +
                                    Math.Pow(location.Z - firstLocation.Z, 2));
-            var replaceMaterial = BlockManager.GetBlock(PlayerState.GetString(0));
+            Block replaceMaterial = BlockManager.GetBlock(PlayerState.GetString(0));
             var isHollow = PlayerState.GetInt(1) == 1;
-
-            ExecutingClient.ClientPlayer.CurrentState.CurrentMode = null;
-            ExecutingClient.ClientPlayer.CurrentState.ResendBlocks(ExecutingClient);
             
+            PlayerState.CurrentMode = null;
+            PlayerState.ResendBlocks(ExecutingClient);
+
             if (radius < 50) {
                 ExecutingClient.ClientPlayer.Entity.CurrentMap.MapActions.ActionQueue.Enqueue(() => {
                     var opts = new SphereOptions {
