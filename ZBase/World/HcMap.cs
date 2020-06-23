@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -46,7 +47,8 @@ namespace ZBase.World {
         
                 // -- Portals :>
         public TeleportArray Portals { get; set; }
-
+        public HcMapActions MapActions { get; set; }
+        
         // -- Events Generated.
         public event BlockchangeArgs BlockChanged;
         public event EntityEventArgs EntityCreated, EntityDestroyed;
@@ -66,7 +68,7 @@ namespace ZBase.World {
             MapProvider = new ClassicWorldMapProvider();
             MapProvider.CreateNew(size, filename, mapName);
             Portals = new TeleportArray(MapProvider.GetSize());
-            
+            MapActions = new HcMapActions();
             BuildRank = 0;
             Showrank = 0;
             Joinrank = 0;
@@ -94,7 +96,8 @@ namespace ZBase.World {
 
             Load(filename);
             Filename = filename;
-
+            
+            MapActions = new HcMapActions();
             Interval = new TimeSpan(0, 1, 0);
             TaskScheduler.RegisterTask($"Map save ({MapProvider.MapName})", this);
             LoadStack();

@@ -1,7 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <Company>Scripter's Hideout</Company>
+        <Product>ZBase</Product>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ZBase\ZBase.csproj" />
+    </ItemGroup>
+    
 </Project>

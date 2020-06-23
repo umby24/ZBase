@@ -37,5 +37,9 @@
         public static bool operator ==(Vector3S item1, Vector3S item2) => (item1.X, item1.Y, item1.Z) == (item2.X, item2.Y, item2.Z);
 
         public static bool operator !=(Vector3S item1, Vector3S item2) => (item1.X, item1.Y, item1.Z) != (item2.X, item2.Y, item2.Z);
+
+        public override string ToString() {
+            return $"[Vector: {X}, {Y}, {Z}]";
+        }
     }
 }

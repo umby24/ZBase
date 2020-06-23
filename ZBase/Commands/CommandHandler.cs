@@ -160,14 +160,14 @@ namespace ZBase.Commands {
             }
 
             Commands.Add(c.CommandString, c);
+            if (c.CommandAliases != null) {
+                foreach (string aliase in c.CommandAliases) {
+                    if (Commands.TryGetValue(aliase, out existing))
+                        continue;
 
-            foreach (string aliase in c.CommandAliases) {
-                if (Commands.TryGetValue(aliase, out existing))
-                    continue;
-
-                Commands.Add(aliase, c);
+                    Commands.Add(aliase, c);
+                }
             }
-
 			if (!Groups.Contains (c.Group.ToLower ()))
 				Groups.Add (c.Group.ToLower ());
 			

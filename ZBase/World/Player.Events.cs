@@ -114,6 +114,12 @@ namespace ZBase.World {
                 return;
             }
 
+            if (CurrentState.CurrentMode != null) {
+                CurrentState.AddBlock(location.X, location.Y, location.Z);
+                CurrentState.CurrentMode.Invoke(location, mode, BlockManager.GetBlock(type));
+                return;
+            }
+            
             byte actualType = 0;
 
             if (mode == 1)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using ZBase.Common;
+using ZBase.Network;
 
 namespace ZBase.BuildModes {
     public class BuildModeManager : TaskItem
@@ -28,7 +29,7 @@ namespace ZBase.BuildModes {
            
         }
 
-        public BuildMode GetBuildmode(string name)
+        public BuildMode GetBuildmode(string name, Client executingClient)
         {
             if (!_buildModes.ContainsKey(name.ToLower()))
             {
@@ -38,10 +39,11 @@ namespace ZBase.BuildModes {
 
             var bm = _buildModes[name.ToLower()];
             var newBm = (BuildMode)Activator.CreateInstance(bm.GetType());
+            newBm.ExecutingClient = executingClient;
             return newBm;
         }
 
-        private void RegisterBuildMode(BuildMode mode)
+        public void RegisterBuildMode(BuildMode mode)
         {
             if (_buildModes.ContainsKey(mode.Name.ToLower()))
             {

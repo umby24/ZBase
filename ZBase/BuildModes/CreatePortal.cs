@@ -27,7 +27,7 @@ namespace ZBase.BuildModes {
                 SendExecutorMessage(Constants.InvalidNumArgumentsMessage);
                 return;
             }
-            var bm = BuildModeManager.Instance.GetBuildmode(Constants.AddPortalBuildModeName);
+            var bm = BuildModeManager.Instance.GetBuildmode(Constants.AddPortalBuildModeName, ExecutingClient);
             ExecutingClient.ClientPlayer.CurrentState.CurrentMode = bm;
             
             SendExecutorMessage("§SPlace two blocks to define the portal area.");
@@ -56,7 +56,7 @@ namespace ZBase.BuildModes {
                 return;
             }
 
-            var bm = BuildModeManager.Instance.GetBuildmode(Constants.DeletePortalBuildModeName);
+            var bm = BuildModeManager.Instance.GetBuildmode(Constants.DeletePortalBuildModeName, ExecutingClient);
             ExecutingClient.ClientPlayer.CurrentState.CurrentMode = bm;
 
             SendExecutorMessage("§SDelete Portal Buildmode Started.");

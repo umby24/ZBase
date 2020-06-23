@@ -16,7 +16,6 @@ using TaskScheduler = ZBase.Common.TaskScheduler;
 /*
  * TODO:
  * Permissions
- * Plugins??
  * Physics??
  * How should I do blocks??
  * Building assistance commands (/box, /line, etc) -> Inside plugins, or server?
