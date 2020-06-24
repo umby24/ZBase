@@ -59,23 +59,37 @@ namespace ZBase.Fills {
         
         public override void Execute(HcMap map, string[] args) {
             Vector3S mapSize = map.GetSize();
+            MapSize = mapSize;
             int chunkX = mapSize.X / 16;
             int chunkY = mapSize.Y / 16;
             
             var randomGenerator = new Random();
             var firstSeed = randomGenerator.Next(-500, 500) / 2;
             var secondSeed = randomGenerator.Next(-500, 500) / 2;
-            
+            var newSeed = randomGenerator.Next(-500, 500) / 2;
             
             var data = new byte[mapSize.X*mapSize.Y*mapSize.Z];
             data = AddWater(mapSize, data, 2);
 
-            for (var x = 0; x < chunkX; x++) {
-                for (var y = 0; y < chunkY; y++) {
+            for (var x = 0; x < chunkX; x++)
+            {
+                for (var y = 0; y < chunkY; y++)
+                {
                     data = createSkyIslands(data, x, y, secondSeed, 1, mapSize.Z);
+                    data = createSkyIslands(data, x, y, secondSeed, 2, mapSize.Z);
+
+                    if (mapSize.Z > 64)
+                    {
+                        data = createSkyIslands2(data, x, y, firstSeed, 1, mapSize.Z, 3);
+                    }
+
+                    if (mapSize.Z > 256)
+                    {
+                        data = createSkyIslands2(data, x, y, newSeed, 1, mapSize.Z, 10);
+                    }
                 }
             }
-            
+
             map.SetMap(data);
             Chat.SendMapChat("Sky Islands done!", 0, map);
             map.Resend();
@@ -135,9 +149,13 @@ namespace ZBase.Fills {
             
             // -- Iterations
             while (size < chunks * resultSize) {
-                for (var ix = size; ix > 0; ix--) { // -- expand the array out a bit..
-                    for (var iy = size; iy > 0; iy--) {
-                        result.Add(new Vector2S(ix*2, iy*2), result[new Vector2S(ix, iy)]);
+                for (var ix = size; ix >= 0; ix--) { // -- expand the array out a bit..
+                    for (var iy = size; iy >= 0; iy--) {
+                        var point1 = new Vector2S(ix * 2, iy * 2);
+                        var point2 = result[new Vector2S(ix, iy)];
+                        
+                        if (!result.ContainsKey(point1))
+                            result.Add(point1, point2);
                     }
                 }
 
@@ -203,9 +221,11 @@ namespace ZBase.Fills {
             }
             
             // -- Final return build.
-            float[,] final = new float[resultSize,resultSize];
-            for (var ix = 0; ix < resultSize; ix++) {
-                for (var iy = 0; iy < resultSize; iy++) {
+            float[,] final = new float[resultSize+1,resultSize+1];
+            for (var ix = 0; ix <= resultSize; ix++) {
+                for (var iy = 0; iy <= resultSize; iy++) {
+                    Logger.Log(LogType.Debug, $"ix: {ix} iy: {iy}");
+
                     var point = new Vector2S((short)(offsetX * resultSize + ix), (short)(offsetY*resultSize+iy));
                     final[ix, iy] = result[point];
                 }
@@ -219,18 +239,20 @@ namespace ZBase.Fills {
             int size = iterPerChunk;
             
             var map = new Dictionary<Vector2S, float>();
-            for (var ix = 0; ix < iterPerChunk; ix++) {
-                for (var iy = 0; iy < iterPerChunk; iy++) {
+            for (var ix = 0; ix <= iterPerChunk; ix++) {
+                for (var iy = 0; iy <= iterPerChunk; iy++) {
                     map.Add(new Vector2S(ix, iy), heightMap[ix, iy]);
                 }
             }
             
             while (size < ChunkSize) {
                 // -- Array Resizing..
-                for (var ix = size; ix > 0; ix--) {
-                    for (var iy = size; iy > 0; iy--) {
+                for (var ix = size; ix >= 0; ix--) {
+                    for (var iy = size; iy >= 0; iy--) {
                         var point1 = new Vector2S(ix*2, iy*2);
-                        map.Add(point1, heightMap[ix, iy]);
+                        var point2 = map[new Vector2S(ix, iy)];
+                        if (!map.ContainsKey(point1))
+                            map.Add(point1, point2);
                     }
                 }
 
@@ -280,8 +302,8 @@ namespace ZBase.Fills {
 
             if (generationState == 1) {
                 // -- Build the chunk
-                for (var ix = 0; ix < ChunkSize; ix++) {
-                    for (var iy = 0; iy < ChunkSize; iy++) {
+                for (var ix = 0; ix <= ChunkSize; ix++) {
+                    for (var iy = 0; iy <= ChunkSize; iy++) {
                         var currentPoint = new Vector2S(ix, iy);
                         var height = 20 + totalHeight[currentPoint] * mapZ;
                         var height0 = Math.Floor(height + HeightMap0[currentPoint] * 50);
@@ -304,6 +326,46 @@ namespace ZBase.Fills {
             // -- Build the trees.
             return data;
         }
-        
+        private byte[] createSkyIslands2(byte[] data, int chunkX, int chunkY, int seed, int generationState, int mapZ, int divisionFactor)
+        {
+            int offsetX = chunkX * ChunkSize;
+            int offsetY = chunkY * ChunkSize;
+
+            var HeightMap0 = HeightmapFractal(chunkX, chunkY, 1, 1, 1, seed);
+            var heightmap1 = HeightmapFractal(chunkX, chunkY, 1, 1, 0, seed);
+            var totalHeight = HeightmapFractal(chunkX, chunkY, 4, 1, 0, seed);
+
+            if (generationState == 1)
+            {
+                // -- Build the chunk
+                for (var ix = 0; ix <= ChunkSize; ix++)
+                {
+                    for (var iy = 0; iy <= ChunkSize; iy++)
+                    {
+                        var currentPoint = new Vector2S(ix, iy);
+                        var height = 20 + totalHeight[currentPoint] * (mapZ * 2);
+                        var height0 = Math.Floor(height + HeightMap0[currentPoint] * 50);
+                        var height1 = Math.Floor((mapZ / 2) + heightmap1[currentPoint] * 15);
+
+                        for (int iz = (int)height0; iz <= height1; iz++)
+                        {
+                            byte blockType = 3;
+                            if (iz == height1)
+                            {
+                                blockType = 2;
+                            }
+
+                            data[GetBlockCoords(offsetX + ix, offsetY + iy, (int)iz / divisionFactor)] = blockType;
+                        }
+                    }
+                }
+
+                return data;
+            }
+
+            // -- Build the trees.
+            return data;
+        }
+
     }
 }
