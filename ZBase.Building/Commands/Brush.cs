@@ -32,7 +32,7 @@ namespace ZBase.Building.Commands {
             ExecutingClient.ClientPlayer.CurrentState.CurrentMode = bm;
             ExecutingClient.ClientPlayer.CurrentState.Set(myNum, 0);
             
-            SendExecutorMessage("§SMBuild Mode Brush started. Place or delete a block to brush. /cancel to stop.");
+            SendExecutorMessage("§SBuild Mode Brush started. Place or delete a block to brush. /cancel to stop.");
         }
     }
 }
