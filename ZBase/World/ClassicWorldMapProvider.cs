@@ -84,7 +84,7 @@ namespace ZBase.World {
             _cwMap.BlockData = blockData;
         }
 
-        public void SetSize(Vector3S newSize) { // -- TODO: Make resizing an action?
+        public void SetSize(Vector3S newSize) { // -- TODO: Make resizing an action? // -- BUG: This is broken :<
             _cwMap.SizeX = newSize.X;
             _cwMap.SizeY = newSize.Z;
             _cwMap.SizeZ = newSize.Y;

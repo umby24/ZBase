@@ -109,7 +109,7 @@ namespace ZBase.World {
         /// <param name="map">The map to send this player to.</param>
         public void ChangeMap(HcMap map) {
             // -- Announce
-            Chat.SendGlobalChat($"§SPlayer {Entity.PrettyName} changed to map '{map.MapProvider.MapName}'", 0); // -- TODO: Move this into an event handler.
+            Chat.SendGlobalChat($"§SPlayer {Entity.PrettyName}§S changed to map '{map.MapProvider.MapName}'", 0); // -- TODO: Move this into an event handler.
             DespawnEntities();
 
             // -- Cleanup events

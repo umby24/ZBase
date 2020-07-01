@@ -30,24 +30,24 @@ namespace ZBase.Fills {
             var mBuildings = new Dictionary<double, int>();
             var rng = new Random();
 
-            for (var x = 0; x < hmapSizeX + 2; x++) {
-                for (var y = 0; y < hmapSizeY + 2; y++) {
+            for (var x = 0; x <= hmapSizeX; x++) {
+                for (var y = 0; y <= hmapSizeY; y++) {
                     double number = (x + y * hmapSizeX) * fields;
                     mBuildings[number] = rng.Next(0, mapSize.Z);
                 }
             }
 
-            for (var x = 0; x < hmapSizeX + 2; x++) {
+            for (var x = 0; x <= hmapSizeX; x++) {
 
-                for (var y = 0; y < hmapSizeY + 2; y++)
+                for (var y = 0; y <= hmapSizeY; y++)
                 {
                     double number = (x + y * hmapSizeX) * fields;
                     int oheight = mBuildings[number];
                     int height = oheight * _priority;
 
                     var count = 0;
-                    for (int ax = -_area; ax < _area; ax++) {
-                        for (int ay = -_area; ay < _area; ay++) {
+                    for (int ax = -_area; ax <= _area; ax++) {
+                        for (int ay = -_area; ay <= _area; ay++) {
                             if (x + ax < 0 || x + ax >= hmapSizeX || y + ay < 0 || y + ay >= hmapSizeY)
                                 continue;
 
@@ -64,15 +64,15 @@ namespace ZBase.Fills {
                     int by = y * _mapScale;
                     byte mat = BlockManager.GetBlock("Red Cloth").Id; //21; // -- material
 
-                    for (var iz = 0; iz < height; iz++) {
+                    for (var iz = 0; iz <= height; iz++) {
                         if (mat > 33)
                             mat = BlockManager.GetBlock("Red Cloth").Id;
 
                         for (var ix = 0; ix < _mapScale; ix++) {
                             for (var iy = 0; iy < _mapScale; iy++) {
 
-                                if (bx + ix > mapSize.X || by+iy > mapSize.Y)
-                                    continue;
+                                //if (bx + ix > mapSize.X || by+iy > mapSize.Y)
+                                //    continue;
 
                                 int xCoord = bx + ix;
                                 int yCoord = by + iy;
