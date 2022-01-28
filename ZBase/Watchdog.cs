@@ -231,7 +231,7 @@ namespace ZBase {
   //              page += "\t\t\t\t<td>" + map.HCSettings.History + "</td>\n";
   //              page += "\t\t\t\t<td>" + map.PhysicsQueue.Count + "</td>\n";
   //              page += "\t\t\t\t<td>" + map.BlockchangeQueue.Count + "</td>\n";
-                page += "\t\t\t\t<td>" + Server.RoClients.Count(a => a.ClientPlayer != null && a.ClientPlayer.Entity.CurrentMap == map) + "</td>\n";
+                page += "\t\t\t\t<td>" + Server.RoClients.Count(a => a.ClientPlayer != null && a.ClientPlayer.Entity?.CurrentMap == map) + "</td>\n";
                 page += "\t\t\t</tr>\n";
             }
 
@@ -252,7 +252,7 @@ namespace ZBase {
             page += "\n\t\t\t<th>Entity ID</th>\n\t\t\t<th>Send Queue</th>\n";
 
             foreach (var client in Server.RoClients) {
-                if (client.ClientPlayer.Entity == null)
+                if (client?.ClientPlayer?.Entity == null)
                     continue;
 
                 page += "\t\t\t<tr>\n";

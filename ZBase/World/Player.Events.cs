@@ -81,7 +81,7 @@ namespace ZBase.World {
 
             // -- Check map build permissions
             if (Entity.CurrentMap.BuildRank > CurrentRank.Value) {
-                Chat.SendClientChat("§EOnly " + Rank.GetRank(Entity.CurrentMap.BuildRank) + "+ can build here.", 0, _client);
+                Chat.SendClientChat("§EOnly " + Common.Rank.GetRank(Entity.CurrentMap.BuildRank) + "+ can build here.", 0, _client);
                 return false;
             }
 

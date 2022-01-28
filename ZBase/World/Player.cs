@@ -7,14 +7,27 @@ using ZBase.Network;
 using ZBase.Persistence;
 
 namespace ZBase.World {
-    public partial class Player {
+    public partial class Player : IMinecraftPlayer {
         public static readonly PlayerDb Database = new PlayerDb();
         public string Name { get; set; }
         public Rank CurrentRank { get; set; }
         public DateTime MutedUntil { get; set; }
         public BuildState CurrentState { get; set; }
         public string ChatBuffer { get; set; }
-        
+        // -- Interface items
+        public int Id => throw new NotImplementedException();
+
+        public int Rank => CurrentRank.Value;
+
+        public int CustomBlockLevel => 0;
+
+        public int Ping => 0;
+
+        public string LoginName => Name;
+
+        bool IMinecraftPlayer.Stopped => Stopped;
+        // -- /Interface items
+
         public Entity Entity;
         
         private readonly Client _client;
@@ -155,7 +168,7 @@ namespace ZBase.World {
             }
 
             PlayerModel dbEntry = Database.GetPlayerModel(Name);
-            CurrentRank = Rank.GetRank (dbEntry.Rank);
+            CurrentRank = Common.Rank.GetRank (dbEntry.Rank);
             
             if (Entity != null) {
                 Entity.PrettyName = CurrentRank.Prefix + Name + CurrentRank.Suffix;
@@ -174,6 +187,22 @@ namespace ZBase.World {
             }
 
             MutedUntil = Utils.GetUnixEpoch().AddSeconds(mutedUntil);
+        }
+
+        public void SendChat(string message) {
+            SendSplitChat(Text.SplitLines(message));
+        }
+
+        public void Kick(string reason, bool hide = false) {
+            _client.Kick(reason);
+        }
+
+        public void SendDefineBlock() {
+            throw new NotImplementedException();
+        }
+
+        public void SendDeleteBlock(byte blockId) {
+            throw new NotImplementedException();
         }
     }
 }

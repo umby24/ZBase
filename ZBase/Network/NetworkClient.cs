@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Net;
 using System.Net.Sockets;
 using ManagedSockets;
 using ManagedSockets.EventArgs;
@@ -11,8 +12,11 @@ namespace ZBase.Network {
         private readonly ClientSocket _baseSocket;
         private readonly ByteBuffer _receiveBuffer, _sendBuffer; // -- Raw network data to be processed.
         private readonly ConcurrentQueue<IPacket> _eventQueue; // -- packets to be processed
+        public string Ip { get; }
 
-        public NetworkClient() {
+        private bool _dataAvailable;
+
+        public NetworkClient(TcpClient sock) {
             _receiveBuffer = new ByteBuffer();
             _sendBuffer = new ByteBuffer();
             _baseSocket = new ClientSocket();
@@ -21,14 +25,14 @@ namespace ZBase.Network {
             _sendBuffer.DataAdded += SendBufferOnDataAdded;
             _baseSocket.DataReceived += BaseSocketOnDataReceived;
             _baseSocket.Disconnected += BaseSocketOnDisconnected;
-        }
-
-        public void AcceptClient(TcpClient incomingClient) {
-            _baseSocket.Accept(incomingClient);
+            
+            Ip = _baseSocket.Endpoint.Address.ToString();
+            _dataAvailable = false;
         }
 
         private void BaseSocketOnDisconnected(SocketDisconnectedArgs args) {
-            throw new NotImplementedException();
+            Shutdown();
+            Logger.Log(LogType.Info, $"{Ip} Disconnected");
         }
 
         private void BaseSocketOnDataReceived(DataReceivedArgs args) {
@@ -38,7 +42,9 @@ namespace ZBase.Network {
         }
 
         private void SendBufferOnDataAdded() {
-            throw new NotImplementedException();
+            lock (_sendBuffer) {
+                _dataAvailable = true;
+            }
         }
 
 

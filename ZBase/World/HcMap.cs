@@ -192,9 +192,6 @@ namespace ZBase.World {
                 return 254;
 
             return !Loaded ? (byte)254 : MapProvider.GetBlock(x, y, z);
-
-            //int index = (y * CwMap.SizeZ + z) * CwMap.SizeX + x;
-            //return CwMap.BlockData[index];
         }
         public byte GetBlockId(Vector3S location) {
             return GetBlockId(location.X, location.Y, location.Z);

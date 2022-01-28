@@ -70,6 +70,10 @@ namespace ZBase.World {
             var blockLocation = location.GetAsBlockCoords();
 
             var xIndex = GetArrayIndex(blockLocation.X);
+            
+            if (xIndex >= _xArray.Length || xIndex < 0)
+                return null;
+
             var xResult = GetValue(_xArray[xIndex], blockLocation.X) > 0;
 
             if (!xResult)
