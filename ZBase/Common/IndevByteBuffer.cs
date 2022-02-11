@@ -38,18 +38,17 @@ namespace ZBase.Common {
         }
 
         public byte ReadByte() {
+            WaitForData(1);
             lock (_opLocker) {
-                WaitForData(1);
                 byte value = _buffer[0];
-
                 RemoveBytes(1);
                 return value;
             }
         }
 
         public short ReadShort() {
+            WaitForData(2);
             lock (_opLocker) {
-                WaitForData(2);
                 byte[] data = ReadBytes(2);
                 RemoveBytes(2);
                 Array.Reverse(data);
@@ -59,6 +58,7 @@ namespace ZBase.Common {
         }
 
         public int ReadInt() {
+            WaitForData(4);
             lock (_opLocker) {
                 byte[] data = ReadBytes(4);
                 RemoveBytes(4);
@@ -68,10 +68,16 @@ namespace ZBase.Common {
         }
 
         public string ReadString() {
+            WaitForData(2);
+            short strLen = 0;
             lock (_opLocker) {
-                short strLen = ReadShort();
+                strLen = ReadShort();
                 if (strLen == 0) return "";
+            }
+            
+            WaitForData(strLen*2);
 
+            lock(_opLocker) { 
                 byte[] data = ReadBytes(strLen*2);
                 RemoveBytes(strLen*2);
                 var encoding = Encoding.BigEndianUnicode;
@@ -88,6 +94,7 @@ namespace ZBase.Common {
         }
 
         public byte[] ReadByte(int length) {
+            WaitForData(length);
             lock (_opLocker) {
                 byte[] data = ReadBytes(length);
                 RemoveBytes(length);
@@ -208,6 +215,7 @@ namespace ZBase.Common {
 
         public long ReadLong()
         {
+            WaitForData(8);
             lock (_opLocker)
             {
                 byte[] data = ReadBytes(8);

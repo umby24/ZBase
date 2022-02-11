@@ -17,7 +17,7 @@ namespace ZBase.Network {
     public class Client : TaskItem {
         // -- Public
         public string Ip { get; set; } // -- The IP of the connected client
-        public Player ClientPlayer { get; set; } // -- The entity tied to this client (If they are verified.)
+        public ClassicubePlayer ClientPlayer { get; set; } // -- The entity tied to this client (If they are verified.)
         public bool Verified { get; set; } // -- True if this is a minecraft client that has been negotiated with us.
 
         public readonly ByteBuffer SendBuffer; // -- The send buffer

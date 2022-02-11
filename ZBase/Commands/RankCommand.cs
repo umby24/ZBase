@@ -53,12 +53,12 @@ namespace ZBase.Commands {
         }
 
         private PlayerModel GetPlayerModel(string username) {
-            if (!Player.Database.ContainsPlayer(username)) {
+            if (!ClassicubePlayer.Database.ContainsPlayer(username)) {
                 SendExecutorMessage($"§ECould not find a player called {username}");
                 return null;
             }
 
-            PlayerModel playerModel = Player.Database.GetPlayerModel(username);
+            PlayerModel playerModel = ClassicubePlayer.Database.GetPlayerModel(username);
             return playerModel;
         }
         
@@ -96,7 +96,7 @@ namespace ZBase.Commands {
         }
 
         private static Rank GetPlayerRank(string name) {
-            PlayerModel playerEntry = Player.Database.GetPlayerModel(name);
+            PlayerModel playerEntry = ClassicubePlayer.Database.GetPlayerModel(name);
             return Rank.GetRank(playerEntry.Rank);
         }
 
@@ -123,7 +123,7 @@ namespace ZBase.Commands {
             }
             
             playerEntry.Rank = (short)rnkNumber;
-            Player.Database.UpdatePlayer(playerEntry);
+            ClassicubePlayer.Database.UpdatePlayer(playerEntry);
 
 
             SendExecutorMessage($"§SPlayer {username} is now ranked {rnk.Name}({rnkNumber})");

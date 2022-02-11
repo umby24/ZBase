@@ -2,8 +2,8 @@ using ZBase.Common;
 using ZBase.Network;
 
 namespace ZBase.World {
-    public partial class Player {
-        protected internal void HandleChatReceived(string message) {
+    public partial class ClassicubePlayer {
+        public void HandleChatReceived(string message) {
             SendSplitChat(Text.SplitLines(message));
         }
 

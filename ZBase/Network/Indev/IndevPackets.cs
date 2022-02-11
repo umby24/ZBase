@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ZBase.Common;
 using ZBase.World;
 
@@ -44,53 +42,26 @@ namespace ZBase.Network.Indev
                 Logger.Log(LogType.Info, "Client is outdated.");
             else
             {
-                Logger.Log(LogType.Info, "Hey yo yo hey I got a login request");
-                var resp = new LoginRequestPacket
-                {
-                    Username = "",
-                    ProtocolVersion = 1, // -- Entity ID
-                    MapSeed = 0,
-                    Motd = "This is an MOTD!",
-                    ServerName = "Hello ZBase"
+                Logger.Log(LogType.Debug, $"Incoming Name: {Username} mppass: {Motd} Protocol: {ProtocolVersion}");
+
+                if (ProtocolVersion != 9) {
+                    Logger.Log(LogType.Warning, $"Disconnecting {client.Ip}: Unknown protocol version {ProtocolVersion}");
+                    client.Shutdown();
+                    return;
+                }
+
+                //if (!Heartbeat.Verify(c.Ip, Name, Motd)) {
+                //    c.Kick("Failed to verify name");
+                //    return;
+                //}
+
+                client.ClientPlayer = new IndevPlayer(client) {
+                    Name = Username,
                 };
-                client.SendPacket(resp);
+
+                client.ClientPlayer.Login();
+
                 // -- If dead, send update health.
-                // -- then send level data.
-                var loginMap = HcMap.DefaultMap;
-                byte[] mapDataOg = loginMap.GetMapBlocks();
-                byte[] mapMeta = new byte[mapDataOg.Length+4];
-                byte[] withLenMap = new byte[mapDataOg.Length + 4];
-
-                byte[] lenBytes = BitConverter.GetBytes(mapDataOg.Length); // -- Get the length of the map
-                Array.Reverse(lenBytes); // -- Reverse it for proper endianness
-                Buffer.BlockCopy(lenBytes, 0, mapMeta, 0, 4); // -- Copy the length into the send map
-                Buffer.BlockCopy(lenBytes, 0, withLenMap, 0, 4); // -- Copy the length into the send map
-                Buffer.BlockCopy(mapDataOg, 0, withLenMap, 4, mapDataOg.Length); // -- Copy all of the block data in
-
-                byte[] zippedMap = GZip.Compress(withLenMap);
-                byte[] zippedMeta = GZip.Compress(mapMeta);
-
-                var mapDataPack = new LevelData()
-                {
-                    MapData = zippedMap,
-                    MetaData = zippedMeta,
-                    MapSize = zippedMap.Length,
-                    MetaSize = zippedMeta.Length
-                };
-                client.SendPacket(mapDataPack);
-
-                var finalize = new LevelFinalize()
-                {
-                    LevelSize = zippedMap.Length,
-                    LevelShape = 0,
-                    LevelTheme = 0,
-                    LevelType = 0,
-                    Width = loginMap.GetSize().X,
-                    Height = loginMap.GetSize().Z,
-                    Depth = loginMap.GetSize().Y,
-                    WorldTime = 100
-                };
-                client.SendPacket(finalize);
             }
 
         }
@@ -124,7 +95,6 @@ namespace ZBase.Network.Indev
 
         public void Handle(INetworkClient client)
         {
-            Logger.Log(LogType.Info, "Hey yo yo hey I got a Handshake from " + Username);
             client.SetName(Username);
 
             var resp = new HandshakePacket
@@ -173,11 +143,11 @@ namespace ZBase.Network.Indev
     {
         public static byte Id => 0x03;
         public string Message { get; set; }
-        public int PacketLength => throw new NotImplementedException();
+        public int PacketLength => 3;
 
         public void Handle(INetworkClient client)
         {
-            throw new NotImplementedException();
+            Chat.HandleIncoming(client, Message);
         }
 
         public void Read(IByteBuffer client)
@@ -354,11 +324,11 @@ namespace ZBase.Network.Indev
     {
         public static byte Id => 0x0A;
         public bool OnGround { get; set; }
-        public int PacketLength => throw new NotImplementedException();
+        public int PacketLength => 2;
 
         public void Handle(INetworkClient client)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void Read(IByteBuffer client)
@@ -375,7 +345,7 @@ namespace ZBase.Network.Indev
     }
     public struct IndevPlayerPositionPacket : IIndevPacket
     {
-        public static byte Id => 0x0B;
+        public static byte Id => 11;
         public double X { get; set; }
         public double Y { get; set; }
         public double Z { get; set; }
@@ -390,10 +360,10 @@ namespace ZBase.Network.Indev
 
         public void Read(IByteBuffer client)
         {
-            X = client.ReadLong();
-            Y = client.ReadLong();
-            Z = client.ReadLong();
-            Stance = client.ReadLong();
+            X = (double)client.ReadInt();
+            Y = (double)client.ReadInt();
+            Stance = client.ReadInt();
+            Z = client.ReadInt();
             OnGround = client.ReadByte() > 0;
         }
 
@@ -414,11 +384,11 @@ namespace ZBase.Network.Indev
         public float Yaw { get; set; }
         public float Pitch { get; set; }
         public bool OnGround { get; set; }
-        public int PacketLength => throw new NotImplementedException();
+        public int PacketLength => 9;
 
         public void Handle(INetworkClient client)
         {
-            throw new NotImplementedException();
+           // throw new NotImplementedException();
         }
 
         public void Read(IByteBuffer client) {
@@ -440,7 +410,7 @@ namespace ZBase.Network.Indev
 
     public struct PlayerPositionAndLook : IIndevPacket
     {
-        public static byte Id => 0x0D;
+        public static byte Id => 13;
         public double X { get; set; }
         public double Y { get; set; }
         public double Z { get; set; }
@@ -448,7 +418,7 @@ namespace ZBase.Network.Indev
         public float Yaw {get; set; }
         public float Pitch { get; set; }
         public bool OnGround { get; set; }
-        public int PacketLength => 25;
+        public int PacketLength => 41;
 
         public void Handle(INetworkClient client)
         {
@@ -457,10 +427,10 @@ namespace ZBase.Network.Indev
 
         public void Read(IByteBuffer client)
         { // -- TODO: Note; This packet may be a different order depending on clientbound or server bound.
-            X = client.ReadLong();
-            Y = client.ReadLong();
-            Z = client.ReadLong();
-            Stance = client.ReadLong();
+            X = client.ReadInt();
+            Y = client.ReadInt();
+            Z = client.ReadInt();
+            Stance = client.ReadInt();
             Yaw = (float)client.ReadInt();
             Pitch = (float)client.ReadInt();
             OnGround = client.ReadByte() > 0;
@@ -908,8 +878,8 @@ namespace ZBase.Network.Indev
     public struct DestroyEntityPacket : IIndevPacket
     {
         public static byte Id => 0x1D;
-        public short Slot { get; set; }
-        public int PacketLength => throw new NotImplementedException();
+        public int EntityID;
+        public int PacketLength => 5;
 
         public void Handle(INetworkClient client)
         {
@@ -918,13 +888,13 @@ namespace ZBase.Network.Indev
 
         public void Read(IByteBuffer client)
         {
-            Slot = client.ReadShort();
+            // -- Clientbound only
         }
 
         public void Write(IByteBuffer client)
         {
             client.WriteByte(Id);
-            client.WriteShort(Slot);
+            client.WriteInt(EntityID);
             client.Purge();
         }
     }
@@ -1004,7 +974,12 @@ namespace ZBase.Network.Indev
     public struct EntityTeleportPacket : IIndevPacket
     {
         public static byte Id => 0x22;
-        public short Slot { get; set; }
+        public int EntityID { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Z { get; set; }
+
+        public sbyte Yaw, Pitch;
         public int PacketLength => throw new NotImplementedException();
 
         public void Handle(INetworkClient client)
@@ -1014,13 +989,18 @@ namespace ZBase.Network.Indev
 
         public void Read(IByteBuffer client)
         {
-            Slot = client.ReadShort();
+            // -- Clientbound only
         }
 
         public void Write(IByteBuffer client)
         {
             client.WriteByte(Id);
-            client.WriteShort(Slot);
+            client.WriteInt(EntityID);
+            client.WriteInt(X);
+            client.WriteInt(Y);
+            client.WriteInt(Z);
+            client.WriteByte((byte)Yaw);
+            client.WriteByte((byte)Pitch);
             client.Purge();
         }
     }
@@ -1114,7 +1094,7 @@ namespace ZBase.Network.Indev
 
         public void Read(IByteBuffer client)
         {
-            //Slot = client.ReadShort();
+            // -- Clientbound only
         }
 
         public void Write(IByteBuffer client)
@@ -1153,7 +1133,7 @@ namespace ZBase.Network.Indev
 
         public void Read(IByteBuffer client)
         {
-            //Slot = client.ReadShort();
+            // Clientbound only
         }
 
         public void Write(IByteBuffer client)
@@ -1198,8 +1178,12 @@ namespace ZBase.Network.Indev
     public struct BlockChangePacket : IIndevPacket
     {
         public static byte Id => 0x35;
-        public short Slot { get; set; }
-        public int PacketLength => throw new NotImplementedException();
+        public int X { get; set; }
+        public sbyte Y { get; set; }
+        public int Z { get; set; }
+        public sbyte BlockID { get; set; }
+        public sbyte Metadata { get; set; }
+        public int PacketLength => 12;
 
         public void Handle(INetworkClient client)
         {
@@ -1208,13 +1192,17 @@ namespace ZBase.Network.Indev
 
         public void Read(IByteBuffer client)
         {
-            Slot = client.ReadShort();
+            
         }
 
         public void Write(IByteBuffer client)
         {
             client.WriteByte(Id);
-            client.WriteShort(Slot);
+            client.WriteInt(X);
+            client.WriteByte((byte)Y);
+            client.WriteInt(Z);
+            client.WriteByte((byte)BlockID);
+            client.WriteByte((byte)Metadata);
             client.Purge();
         }
     }

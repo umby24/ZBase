@@ -82,12 +82,19 @@ namespace ZBase.Network {
                         roClient.SendQueued();
                     }
 
-                    roClient.Handle();
+                    try {
+                        roClient.Handle();
+                    }
+                    catch (Exception ex) {
+                        Console.WriteLine("ASDASDASDASD");
+                    }
+                    
                 }
 
                 Watchdog.Watch("Network IO", "End Loop", false);
                 Thread.Sleep(1);
             }
+            Console.WriteLine("YO WTF");
         }
 
         private void ServerOnIncomingClient(IncomingEventArgs args) {

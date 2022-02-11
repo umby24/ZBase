@@ -28,6 +28,16 @@ namespace ZBase.Network {
                 Logger.Log(LogType.Chat, "[To Map " + map.MapProvider.MapName + "]: " + message);
         }
 
+        public static void SendClientChat(string message, sbyte messageType, INetworkClient recipient, bool log = false) {
+            message = Text.CleanseString(message);
+            message = EmoteReplace(message);
+            // -- Event?
+            if (log)
+                Logger.Log(LogType.Chat, "[To: " + recipient.Name + "]: " + message);
+
+            recipient.GetPlayerInstance().HandleChatReceived(message);
+        }
+
         public static void SendClientChat(string message, sbyte messageType, Client recipient, bool log = false) {
             message = Text.CleanseString(message);
             message = EmoteReplace(message);
@@ -36,6 +46,26 @@ namespace ZBase.Network {
                 Logger.Log(LogType.Chat, "[To: " + recipient.ClientPlayer.Name + "]: " + message);
 
             recipient.ClientPlayer.HandleChatReceived(message);
+        }
+
+        public static void HandleIncoming(INetworkClient c, string message, bool extend = false) {
+            //if (c.ClientPlayer.MutedUntil >= DateTime.UtcNow) {
+            //    SendClientChat(Constants.SystemColor + MutedMessage, 0, c);
+            //    return;
+            //}
+
+            if (message.StartsWith(CommandHandler.CommandPrefix)) {
+                //CommandHandler.HandleCommand(c, message);
+                return;
+            }
+
+            //if (extend) {
+            //    c.ClientPlayer.ChatBuffer += message;
+            //    return;
+            //}
+
+            SendGlobalChat(c.ClientPlayer.Entity.PrettyName + Constants.DefaultColor + ": " + message, 0, true);
+            //c.ClientPlayer.ChatBuffer = "";
         }
 
         public static void HandleIncoming(Client c, string message, bool extend = false) {

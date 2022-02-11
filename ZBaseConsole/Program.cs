@@ -45,9 +45,9 @@ namespace ZBaseConsole {
             }
 
             if (input.StartsWith("/opme")) {
-                var model = Player.Database.GetPlayerModel("umby24");
+                var model = ClassicubePlayer.Database.GetPlayerModel("umby24");
                 model.Rank = (short) short.MaxValue;
-                Player.Database.UpdatePlayer(model);
+                ClassicubePlayer.Database.UpdatePlayer(model);
             }
         }
     }

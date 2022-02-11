@@ -7,7 +7,7 @@ using ZBase.Network;
 using ZBase.Persistence;
 
 namespace ZBase.World {
-    public partial class Player : IMinecraftPlayer {
+    public partial class ClassicubePlayer : IMinecraftPlayer {
         public static readonly PlayerDb Database = new PlayerDb();
         public string Name { get; set; }
         public Rank CurrentRank { get; set; }
@@ -26,17 +26,18 @@ namespace ZBase.World {
         public string LoginName => Name;
 
         bool IMinecraftPlayer.Stopped => Stopped;
+
         // -- /Interface items
 
-        public Entity Entity;
-        
+        public Entity Entity { get; set; }
+
         private readonly Client _client;
         public Block Material;
         public Block LastMaterial;
         public bool Stopped;
         private bool _banned;
 
-        public Player(Client client) {
+        public ClassicubePlayer(Client client) {
             _client = client;
             CurrentState = new BuildState();
             ChatBuffer = "";
@@ -51,40 +52,40 @@ namespace ZBase.World {
             }
 
             var loginMap = HcMap.DefaultMap;
-            
+
             Entity = new Entity { // -- Create our entity
                 Name = Name,
                 Location = loginMap.GetSpawn(),
                 CurrentMap = loginMap,
                 PrettyName = CurrentRank.Prefix + Name + CurrentRank.Suffix
             };
-            
+
             Entity.OnEntityDespawned += DespawnEntity;
             Entity.OnEntitySpawned += SpawnEntity;
             Entity.OtherEntityMoved += SomeoneMoved;
-            
+
             _client.SendHandshake(CurrentRank.ClientOp); // -- Send the handshake (acknowledgement)
-            
+
             MapSend(loginMap.GetChunks()); // -- Send the map to the client.
 
             loginMap.BlockChanged += MapBlockChange; // -- Subscribe to block change events
             loginMap.MapChatSent += HandleChatReceived; // -- sub to map chat.
 
             _client.Verified = true; // -- Register the client, announce their arrival, and set them as verified (Can perform actions)
-            
+
             Entity.Spawn(); // -- Spawn this client for everyone (including themselves)
 
             var entities = Entity.CurrentMap.Entities;
             Parallel.ForEach(entities, SpawnEntity);
 
             Entity.HandleMove(); // -- make sure initial position is set.
-            
+
             // -- Register this person for global chat messages.
             Chat.GlobalChatSent += HandleChatReceived;
 
-            Chat.SendGlobalChat($"{Entity.PrettyName}§S logged in.",0,true);
+            Chat.SendGlobalChat($"{Entity.PrettyName}§S logged in.", 0, true);
         }
-        
+
         public void Logout() {
             Entity.Despawn();
 
@@ -142,14 +143,14 @@ namespace ZBase.World {
 
             var entities = Entity.CurrentMap.Entities;
             Parallel.ForEach(entities, SpawnEntity);
-            
+
             Entity.HandleMove(); // -- make sure initial position is set.
         }
 
         private void DespawnEntities() {
             // -- Remove all entities from this client
             var entities = Entity.CurrentMap.Entities;
-            
+
             foreach (Entity entity in entities) {
                 DespawnEntity(entity);
             }
@@ -163,17 +164,17 @@ namespace ZBase.World {
                     Rank = 0,
                     GlobalChat = true
                 };
-                
+
                 Database.CreatePlayer(newPlayer);
             }
 
             PlayerModel dbEntry = Database.GetPlayerModel(Name);
-            CurrentRank = Common.Rank.GetRank (dbEntry.Rank);
-            
+            CurrentRank = Common.Rank.GetRank(dbEntry.Rank);
+
             if (Entity != null) {
                 Entity.PrettyName = CurrentRank.Prefix + Name + CurrentRank.Suffix;
             }
-            
+
             Stopped = dbEntry.Stopped;
             _banned = dbEntry.Banned;
 

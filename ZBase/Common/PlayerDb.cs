@@ -17,6 +17,7 @@ namespace ZBase.Common {
 	public class PlayerDb {
 		public bool ContainsPlayer(string name) {
 			using var context = new PlayerDbContext();
+			if (context.Players.Count() == 0) return false;
 			var allPlayers = context.Players.ToList();
 			
 			return allPlayers.Any(a => String.Equals(a.Name, name, StringComparison.CurrentCultureIgnoreCase));
@@ -45,6 +46,14 @@ namespace ZBase.Common {
 			context.SaveChanges();
 		}
 		
+		public bool IsIpBanned(string ip)
+        {
+			using var context = new PlayerDbContext();
+			if (context.IpBans.Count() == 0)
+				return false;
+			return context.IpBans.Any(a => a.Ip == ip);
+        }
+
 		/*const string DatabaseName = "Database.s3db";
 #if MONO
         private SqliteConnection _dbConnection;

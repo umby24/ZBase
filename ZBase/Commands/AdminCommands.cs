@@ -60,12 +60,12 @@ namespace ZBase.Commands {
                 return;
             }
 
-            if (!Player.Database.ContainsPlayer(args[0])) {
+            if (!ClassicubePlayer.Database.ContainsPlayer(args[0])) {
                 SendExecutorMessage($"§ECould not find a player called {args[0]}.");
                 return;
             }
 
-            PlayerModel dt = Player.Database.GetPlayerModel(args[0]);
+            PlayerModel dt = ClassicubePlayer.Database.GetPlayerModel(args[0]);
             Rank playerRank = Rank.GetRank(dt.Rank);
 
             if (playerRank.Value >= ExecutingClient.ClientPlayer.CurrentRank.Value) {
@@ -78,7 +78,7 @@ namespace ZBase.Commands {
             dt.Banned = true;
             dt.BannedBy = ExecutingClient.ClientPlayer.Name;
             dt.BanMessage = "You are banned!";
-            Player.Database.UpdatePlayer(dt);
+            ClassicubePlayer.Database.UpdatePlayer(dt);
             
             Chat.SendGlobalChat($"§SPlayer '{args[0]}' has been banned.", 0);
 
@@ -102,15 +102,15 @@ namespace ZBase.Commands {
                 return;
             }
 
-            if (!Player.Database.ContainsPlayer(args[0])) {
+            if (!ClassicubePlayer.Database.ContainsPlayer(args[0])) {
                 SendExecutorMessage($"§ECould not find a player called {args[0]}.");
                 return;
             }
             
-            PlayerModel dt = Player.Database.GetPlayerModel(args[0]);
+            PlayerModel dt = ClassicubePlayer.Database.GetPlayerModel(args[0]);
             dt.Banned = false;
             dt.BannedUntil = 0;
-            Player.Database.UpdatePlayer(dt);
+            ClassicubePlayer.Database.UpdatePlayer(dt);
 
             SendExecutorMessage($"§SPlayer '{args[0]}' has been unbanned.");
         }
@@ -130,12 +130,12 @@ namespace ZBase.Commands {
                 return;
             }
 
-            if (!Player.Database.ContainsPlayer(args[0])) {
+            if (!ClassicubePlayer.Database.ContainsPlayer(args[0])) {
                 SendExecutorMessage($"§ECould not find a player called {args[0]}.");
                 return;
             }
 
-            PlayerModel dt = Player.Database.GetPlayerModel(args[0]);
+            PlayerModel dt = ClassicubePlayer.Database.GetPlayerModel(args[0]);
             Rank playerRank = Rank.GetRank(dt.Rank);
 
             if (playerRank.Value >= ExecutingClient.ClientPlayer.CurrentRank.Value) {
@@ -144,7 +144,7 @@ namespace ZBase.Commands {
             }
             
             dt.Stopped = true;
-            Player.Database.UpdatePlayer(dt);
+            ClassicubePlayer.Database.UpdatePlayer(dt);
             
             Client[] onlineClient = GetOnlineClient(args[0]);
             foreach (var c in onlineClient) {
@@ -170,13 +170,13 @@ namespace ZBase.Commands {
                 return;
             }
 
-            if (!Player.Database.ContainsPlayer(args[0])) {
+            if (!ClassicubePlayer.Database.ContainsPlayer(args[0])) {
                 SendExecutorMessage($"§ECould not find a player called {args[0]}.");
                 return;
             }
-            PlayerModel dt = Player.Database.GetPlayerModel(args[0]);
+            PlayerModel dt = ClassicubePlayer.Database.GetPlayerModel(args[0]);
             dt.Stopped = false;
-            Player.Database.UpdatePlayer(dt);
+            ClassicubePlayer.Database.UpdatePlayer(dt);
 
             Client[] onlineClient = GetOnlineClient(args[0]);
             
@@ -203,7 +203,7 @@ namespace ZBase.Commands {
                 return;
             }
 
-            if (!Player.Database.ContainsPlayer(args[0])) {
+            if (!ClassicubePlayer.Database.ContainsPlayer(args[0])) {
                 SendExecutorMessage($"§ECould not find a player called {args[0]}.");
                 return;
             }
@@ -219,9 +219,9 @@ namespace ZBase.Commands {
             DateTime mutedUntil = DateTime.UtcNow + ts; // -- DB: Time_Muted
             double unixTime = (mutedUntil - Utils.GetUnixEpoch()).TotalSeconds;
             
-            PlayerModel dt = Player.Database.GetPlayerModel(args[0]);
+            PlayerModel dt = ClassicubePlayer.Database.GetPlayerModel(args[0]);
             dt.TimeMuted = unixTime;
-            Player.Database.UpdatePlayer(dt);
+            ClassicubePlayer.Database.UpdatePlayer(dt);
 
             SendExecutorMessage(
                 "§SPlayer muted until " + mutedUntil.ToShortTimeString() + " on " + mutedUntil.ToShortDateString());
@@ -249,13 +249,13 @@ namespace ZBase.Commands {
                 return;
             }
 
-            if (!Player.Database.ContainsPlayer(args[0])) {
+            if (!ClassicubePlayer.Database.ContainsPlayer(args[0])) {
                 SendExecutorMessage($"§ECould not find a player called {args[0]}.");
                 return;
             }
-            PlayerModel dt = Player.Database.GetPlayerModel(args[0]);
+            PlayerModel dt = ClassicubePlayer.Database.GetPlayerModel(args[0]);
             dt.TimeMuted = 0;
-            Player.Database.UpdatePlayer(dt);
+            ClassicubePlayer.Database.UpdatePlayer(dt);
 
             SendExecutorMessage("§SPlayer unmuted.");
 
@@ -282,7 +282,7 @@ namespace ZBase.Commands {
                 return;
             }
 
-            if (!Player.Database.ContainsPlayer(args[0])) {
+            if (!ClassicubePlayer.Database.ContainsPlayer(args[0])) {
                 SendExecutorMessage($"§ECould not find a player called {args[0]}.");
                 return;
             }
@@ -298,9 +298,9 @@ namespace ZBase.Commands {
             DateTime mutedUntil = DateTime.UtcNow + ts;
             double unixTime = (mutedUntil - Utils.GetUnixEpoch()).TotalSeconds;
             
-            PlayerModel dt = Player.Database.GetPlayerModel(args[0]);
+            PlayerModel dt = ClassicubePlayer.Database.GetPlayerModel(args[0]);
             dt.BannedUntil = unixTime;
-            Player.Database.UpdatePlayer(dt);
+            ClassicubePlayer.Database.UpdatePlayer(dt);
 
             SendExecutorMessage(
                 "§SPlayer banned until " + mutedUntil.ToShortTimeString() + " on " + mutedUntil.ToShortDateString());
@@ -327,11 +327,11 @@ namespace ZBase.Commands {
                 return;
             }
 
-            if (!Player.Database.ContainsPlayer(args[0])) {
+            if (!ClassicubePlayer.Database.ContainsPlayer(args[0])) {
                 SendExecutorMessage($"§ECould not find a player called {args[0]}.");
                 return;
             }
-            PlayerModel dt = Player.Database.GetPlayerModel(args[0]);
+            PlayerModel dt = ClassicubePlayer.Database.GetPlayerModel(args[0]);
             
             var newBan = new IpBanModel {
                 BannedBy = ExecutingClient.ClientPlayer.Name,
@@ -340,7 +340,7 @@ namespace ZBase.Commands {
             };
             
             
-            Player.Database.IpBan(newBan);
+            ClassicubePlayer.Database.IpBan(newBan);
 
             foreach (var c in Server.RoClients) {
                 if (c.Ip != dt.Ip)

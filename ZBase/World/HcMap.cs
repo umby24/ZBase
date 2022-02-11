@@ -378,6 +378,9 @@ namespace ZBase.World {
         
         public byte[] GetMapBlocks()
         {
+            if (!Loaded)
+                Reload();
+
             return MapProvider.GetBlocks();
         }
 

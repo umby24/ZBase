@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using ManagedSockets;
 using ManagedSockets.EventArgs;
 using ZBase.Common;
+using ZBase.World;
 
 namespace ZBase.Network {
     public class NetworkClient : TaskItem, INetworkClient {
@@ -12,7 +13,10 @@ namespace ZBase.Network {
         private readonly ClientSocket _baseSocket;
         private readonly ByteBuffer _receiveBuffer, _sendBuffer; // -- Raw network data to be processed.
         private readonly ConcurrentQueue<IPacket> _eventQueue; // -- packets to be processed
-        public string Ip { get; }
+        public string Ip { get; set; }
+        public string Name { get; set; }
+        public bool Verified { get; set; }
+        public IMinecraftPlayer ClientPlayer { get; set; }
 
         private bool _dataAvailable;
 
@@ -106,6 +110,18 @@ namespace ZBase.Network {
 
         public void SendPacket(IIndevPacket packet)
         {
+            throw new NotImplementedException();
+        }
+
+        public void QueueBlockChange(IIndevPacket bcPacket) {
+            throw new NotImplementedException();
+        }
+
+        public void SendHandshake(bool op, string motd = null) {
+            throw new NotImplementedException();
+        }
+
+        public IMinecraftPlayer GetPlayerInstance() {
             throw new NotImplementedException();
         }
     }

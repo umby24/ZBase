@@ -15,12 +15,13 @@ namespace ZBase.Network
     internal class IndevClient : TaskItem, INetworkClient
     {
         public string Ip { get; set; } // -- The IP of the connected client
-        public Player ClientPlayer { get; set; } // -- The entity tied to this client (If they are verified.)
+        public IMinecraftPlayer ClientPlayer { get; set; } // -- The entity tied to this client (If they are verified.)
         public bool Verified { get; set; } // -- True if this is a minecraft client that has been negotiated with us.
-        public string Username { get; set; }
+        public string Name { get; set; }
 
         public readonly IndevByteBuffer SendBuffer; // -- The send buffer
         public ConcurrentQueue<IIndevPacket> BlockChanges { get; set; }
+        public bool DataAvailable;
         // -- Events
         // -- Connected / Disconnected
         // -- DataRecv, DataSent, Packet Handled.
@@ -34,7 +35,7 @@ namespace ZBase.Network
         private bool _disconnectOnSend;
         private readonly object _fk = new object(); // -- Lock to ensure two packets are not being handled at once
         private readonly string _taskId; // -- The task ID for the timeout for this client.
-        public bool DataAvailable;
+        
 
         public IndevClient(TcpClient sock)
         {
@@ -66,9 +67,10 @@ namespace ZBase.Network
 
             Server.RegisterClient(this);
 
-            //if (Player.Database.IsIpBanned(Ip)) {
-            //    Kick(BannedMessage);
-            //}
+            if (ClassicubePlayer.Database.IsIpBanned(Ip))
+            {
+                Kick("You are banned.");
+            }
         }
 
 
@@ -148,16 +150,6 @@ namespace ZBase.Network
             }
         }
 
-        public void SendHandshake(bool op, string motd = null)
-        {
-            //SendPacket(PacketCreator.CreateHandshake(
-            //    Server.ProtocolVersion,
-            //    (byte)(op ? 100 : 0),
-            //    Configuration.Settings.General.Name,
-            //    motd ?? Configuration.Settings.General.Motd
-            //)); // -- Send the handshake (acknowledgement)
-        }
-
         /// <summary>
         /// Sends a proper kick to the client, and disconnects them.
         /// </summary>
@@ -165,9 +157,21 @@ namespace ZBase.Network
         public void Kick(string reason)
         {
             SendPacket(new DisconnectPacket { Slot = 0 });
-            Logger.Log(LogType.Info, Verified ? $"{ClientPlayer.Entity.PrettyName} kicked. ({reason})" : $"{Ip} kicked. ({reason})");
+            Logger.Log(LogType.Info, Verified ? $"{ClientPlayer.LoginName} kicked. ({reason})" : $"{Ip} kicked. ({reason})");
             _disconnectOnSend = true;
             //    Shutdown();
+        }
+
+        public void SendHandshake(bool op, string motd = null) {
+            var resp = new LoginRequestPacket {
+                Username = "",
+                ProtocolVersion = 1, // -- Entity ID
+                MapSeed = 0,
+                Motd = motd ?? Configuration.Settings.General.Motd,
+                ServerName = Configuration.Settings.General.Name
+            };
+
+           SendPacket(resp);
         }
 
         /// <summary>
@@ -199,7 +203,9 @@ namespace ZBase.Network
                 {2, new HandshakePacket()},
                 {3, new ChatMessagePacket() },
                 {7, new UseEntityPacket() },
+                {10, new PlayerGroundedPacket() },
                 {11, new IndevPlayerPositionPacket() },
+                {12, new PlayerLookPacket() },
                 {13, new PlayerPositionAndLook() },
                 {0xFF, new DisconnectPacket() }
             };
@@ -226,15 +232,15 @@ namespace ZBase.Network
                 byte opcode = _receiveBuffer.PeekByte(); // -- Peek doesn't remove the byte. Lets us check if we have enough data yet.
                 IIndevPacket packet;
 
-                //if (!Verified)
-                //{ // -- If this client is unverified, the only packets they're allowed to send are CPE negotiation, and handshake.
-                //    if (opcode != Handshake.Id)
-                //    {
-                //        Logger.Log(LogType.Warning, $"Disconnecting {Ip}: Unexpected handshake opcode ({opcode})");
-                //        Shutdown();
-                //        return;
-                //    }
-                //}
+                if (!Verified)
+                { // -- If this client is unverified, the only packets they're allowed to send are CPE negotiation, and handshake.
+                    if (opcode != HandshakePacket.Id && opcode != LoginRequestPacket.Id)
+                    {
+                        Logger.Log(LogType.Warning, $"Disconnecting {Ip}: Unexpected handshake opcode ({opcode})");
+                        Shutdown();
+                        return;
+                    }
+                }
 
                 if (!_packets.TryGetValue(opcode, out packet))
                 {
@@ -274,10 +280,10 @@ namespace ZBase.Network
                 return;
             }
 
-            if ((DateTime.UtcNow - _lastActive).TotalSeconds >= 30)
-            {
-                Kick("&cConnection timed out");
-            }
+            //if ((DateTime.UtcNow - _lastActive).TotalSeconds >= 30)
+            //{
+            //    Kick("&cConnection timed out");
+            //}
         }
 
         public override void Teardown()
@@ -292,7 +298,16 @@ namespace ZBase.Network
 
         public void SetName(string name)
         {
-            Username = name;
+            Name = name;
+        }
+
+        public void QueueBlockChange(IIndevPacket bcPacket) {
+            BlockChanges.Enqueue(bcPacket);
+            DataAvailable = true;
+        }
+
+        public IMinecraftPlayer GetPlayerInstance() {
+            throw new NotImplementedException();
         }
     }
 }

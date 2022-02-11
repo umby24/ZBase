@@ -45,7 +45,7 @@ namespace ZBase.Network {
                 return;
             }
 
-            c.ClientPlayer = new Player(c) {
+            c.ClientPlayer = new ClassicubePlayer(c) {
                 Name = Name,
             };
             

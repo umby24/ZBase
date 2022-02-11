@@ -40,12 +40,12 @@ namespace ZBase.Commands {
                 return;
             }
 
-            if (!Player.Database.ContainsPlayer(args[0])) {
+            if (!ClassicubePlayer.Database.ContainsPlayer(args[0])) {
                 Chat.SendClientChat("§EPlayer not found.", 0, ExecutingClient);
                 return;
             }
 
-            var dbEntry = Player.Database.GetPlayerModel(args[0]);
+            var dbEntry = ClassicubePlayer.Database.GetPlayerModel(args[0]);
 
             var currentRank = Rank.GetRank(dbEntry.Rank);
             var prettyName = currentRank.Prefix + args[0] + currentRank.Suffix;

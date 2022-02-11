@@ -56,6 +56,7 @@ namespace ZBase.World {
         
         public Entity() {
             SendOwn = true;
+            HeldBlock = BlockManager.GetBlock(0);
         }
 
         private void RemoveMapEvents() {
