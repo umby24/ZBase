@@ -63,7 +63,17 @@ namespace ZBase.Network {
             //    c.ClientPlayer.ChatBuffer += message;
             //    return;
             //}
+            if (message.Contains("/trychangemap")) {
+                HcMap newMap;
 
+                if (!HcMap.Maps.TryGetValue("derp", out newMap)) {
+                    SendClientChat($"§EMap 'derp' not found.", 0, c);
+                    return;
+                }
+
+
+                c.ClientPlayer.ChangeMap(newMap);
+            }
             SendGlobalChat(c.ClientPlayer.Entity.PrettyName + Constants.DefaultColor + ": " + message, 0, true);
             //c.ClientPlayer.ChatBuffer = "";
         }
