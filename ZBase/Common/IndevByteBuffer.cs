@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading;
 
 namespace ZBase.Common {
-    public class ByteBuffer : IByteBuffer {
+    public class IndevByteBuffer : IByteBuffer {
         public int Length {
             get {
                 lock (_opLocker) {
@@ -15,7 +15,7 @@ namespace ZBase.Common {
         private byte[] _buffer;
 		private readonly object _opLocker = new object ();
 
-        public ByteBuffer() {
+        public IndevByteBuffer() {
             _buffer = new byte[0];
         }
 
@@ -69,9 +69,12 @@ namespace ZBase.Common {
 
         public string ReadString() {
             lock (_opLocker) {
-                byte[] data = ReadBytes(64);
-                RemoveBytes(64);
-                var encoding = Encoding.GetEncoding(437);
+                short strLen = ReadShort();
+                if (strLen == 0) return "";
+
+                byte[] data = ReadBytes(strLen*2);
+                RemoveBytes(strLen*2);
+                var encoding = Encoding.BigEndianUnicode;
                 return encoding.GetString(data).Trim();
             }
         }
@@ -110,9 +113,17 @@ namespace ZBase.Common {
             AddBytes(data);
         }
 
+        public void WriteLong(long value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            Array.Reverse(data);
+            AddBytes(data);
+        }
+
         public void WriteString(string value) {
-            var encoding = Encoding.GetEncoding(437);
-            byte[] data = encoding.GetBytes(value.PadRight(64, ' ').Substring(0, 64));
+            var encoding = Encoding.BigEndianUnicode;
+            byte[] data = encoding.GetBytes(value);
+            WriteShort((short)(data.Length/2));
             AddBytes(data);
         }
         #endregion
@@ -197,12 +208,13 @@ namespace ZBase.Common {
 
         public long ReadLong()
         {
-            throw new NotImplementedException();
-        }
-
-        public void WriteLong(long value)
-        {
-            throw new NotImplementedException();
+            lock (_opLocker)
+            {
+                byte[] data = ReadBytes(8);
+                RemoveBytes(8);
+                Array.Reverse(data);
+                return BitConverter.ToInt64(data, 0);
+            }
         }
 
         #endregion

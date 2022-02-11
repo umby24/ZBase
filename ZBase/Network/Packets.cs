@@ -15,14 +15,14 @@ namespace ZBase.Network {
         public string Motd { get; set; }
         public byte Usertype { get; set; }
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             ProtocolVersion = buf.ReadByte();
             Name = buf.ReadString();
             Motd = buf.ReadString();
             Usertype = buf.ReadByte();
         }
 
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteByte(ProtocolVersion);
             buf.WriteString(Name);
@@ -57,10 +57,10 @@ namespace ZBase.Network {
         public static byte Id => 1;
         public int PacketLength => 1;
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
 
         }
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.Purge();
         }
@@ -71,10 +71,10 @@ namespace ZBase.Network {
     public struct LevelInit : IPacket {
         public static byte Id => 2;
         public int PacketLength => 1;
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
 
         }
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.Purge();
         }
@@ -91,12 +91,12 @@ namespace ZBase.Network {
         public byte[] Data { get; set; }
         public byte Percent { get; set; }
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             Length = buf.ReadShort();
             Data = buf.ReadByteArray();
             Percent = buf.ReadByte();
         }
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteShort(Length);
             buf.AddBytes(Data);
@@ -115,12 +115,12 @@ namespace ZBase.Network {
         public short SizeY { get; set; }
         public short SizeZ { get; set; }
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             SizeX = buf.ReadShort();
             SizeZ = buf.ReadShort();
             SizeY = buf.ReadShort();
         }
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteShort(SizeX);
             buf.WriteShort(SizeZ);
@@ -142,7 +142,7 @@ namespace ZBase.Network {
         public byte Mode { get; set; }
         public byte Block { get; set; }
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             X = buf.ReadShort();
             Z = buf.ReadShort();
             Y = buf.ReadShort();
@@ -150,7 +150,7 @@ namespace ZBase.Network {
             Block = buf.ReadByte();
         }
 
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteShort(X);
             buf.WriteShort(Z);
@@ -174,13 +174,13 @@ namespace ZBase.Network {
         public short Z { get; set; }
         public byte Block { get; set; }
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             X = buf.ReadShort();
             Z = buf.ReadShort();
             Y = buf.ReadShort();
             Block = buf.ReadByte();
         }
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteShort(X);
             buf.WriteShort(Z);
@@ -201,7 +201,7 @@ namespace ZBase.Network {
         public string PlayerName { get; set; }
         public MinecraftLocation Location { get; set; }
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             PlayerId = (sbyte)buf.ReadByte();
             PlayerName = buf.ReadString();
             var temp = new MinecraftLocation();
@@ -217,7 +217,7 @@ namespace ZBase.Network {
             Location = temp;
         }
 
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteByte((byte)PlayerId);
             buf.WriteString(PlayerName);
@@ -239,7 +239,7 @@ namespace ZBase.Network {
         public int PacketLength => 10;
         public sbyte PlayerId { get; set; }
         public MinecraftLocation Location { get; set; }
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             PlayerId = (sbyte) buf.ReadByte();
             var x = buf.ReadShort();
             var z = buf.ReadShort();
@@ -249,7 +249,7 @@ namespace ZBase.Network {
             Location = new MinecraftLocation(new Vector3S(x, y, z), rot, look);
         }
 
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteByte((byte)PlayerId);
             buf.WriteShort(Location.X);
@@ -275,7 +275,7 @@ namespace ZBase.Network {
         public byte Yaw { get; set; }
         public byte Pitch { get; set; }
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             PlayerId = (sbyte)buf.ReadByte();
             ChangeX = (sbyte)buf.ReadByte();
             ChangeZ = (sbyte)buf.ReadByte();
@@ -284,7 +284,7 @@ namespace ZBase.Network {
             Pitch = buf.ReadByte();
         }
 
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteByte((byte)PlayerId);
             buf.WriteShort(ChangeX);
@@ -308,14 +308,14 @@ namespace ZBase.Network {
         public sbyte ChangeY { get; set; }
         public sbyte ChangeZ { get; set; }
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             PlayerId = (sbyte)buf.ReadByte();
             ChangeX = (sbyte)buf.ReadByte();
             ChangeZ = (sbyte)buf.ReadByte();
             ChangeY = (sbyte)buf.ReadByte();
         }
 
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
 
         }
         public void Handle(Client c) {
@@ -330,13 +330,13 @@ namespace ZBase.Network {
         public byte Yaw { get; set; }
         public byte Pitch { get; set; }
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             PlayerId = (sbyte)buf.ReadByte();
             Yaw = buf.ReadByte();
             Pitch = buf.ReadByte();
         }
 
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteByte((byte)PlayerId);
             buf.WriteByte(Yaw);
@@ -354,11 +354,11 @@ namespace ZBase.Network {
         public int PacketLength => 2;
         public sbyte PlayerId;
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             PlayerId = (sbyte)buf.ReadByte();
         }
 
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteByte((byte)PlayerId);
             buf.Purge();
@@ -375,12 +375,12 @@ namespace ZBase.Network {
         public sbyte PlayerId { get; set; }
         public string Text { get; set; }
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             PlayerId = (sbyte)buf.ReadByte();
             Text = buf.ReadString();
         }
 
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteByte((byte)PlayerId);
             buf.WriteString(Text);
@@ -398,11 +398,11 @@ namespace ZBase.Network {
         public int PacketLength => 65;
         public string Reason { get; set; }
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             Reason = buf.ReadString();
         }
 
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteString(Reason);
             buf.Purge();
@@ -418,11 +418,11 @@ namespace ZBase.Network {
         public int PacketLength => 2;
         public byte Rank { get; set; }
 
-        public void Read(ByteBuffer buf) {
+        public void Read(IByteBuffer buf) {
             Rank = buf.ReadByte();
         }
 
-        public void Write(ByteBuffer buf) {
+        public void Write(IByteBuffer buf) {
             buf.WriteByte(Id);
             buf.WriteByte(Rank);
             buf.Purge();

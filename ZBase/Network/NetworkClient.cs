@@ -86,5 +86,27 @@ namespace ZBase.Network {
         public override void Teardown() {
           
         }
+
+        public bool HasData() => _dataAvailable;
+
+        public void SendQueued()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Handle()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetName(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SendPacket(IIndevPacket packet)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

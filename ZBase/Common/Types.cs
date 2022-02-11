@@ -253,12 +253,21 @@ namespace ZBase.Common {
     /// </summary>
     public interface IPacket {
         int PacketLength { get; }
-        void Read(ByteBuffer client);
-        void Write(ByteBuffer client);
+        void Read(IByteBuffer client);
+        void Write(IByteBuffer client);
         void Handle(Client client);
     }
 
-
+    /// <summary>
+    /// Interface for Classic packets.
+    /// </summary>
+    public interface IIndevPacket
+    {
+        int PacketLength { get; }
+        void Read(IByteBuffer client);
+        void Write(IByteBuffer client);
+        void Handle(INetworkClient client);
+    }
 
 
 

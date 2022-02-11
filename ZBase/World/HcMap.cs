@@ -376,6 +376,11 @@ namespace ZBase.World {
             }
         }
         
+        public byte[] GetMapBlocks()
+        {
+            return MapProvider.GetBlocks();
+        }
+
         public byte[][] GetChunks() {
             if (!Loaded)
                 Reload();
