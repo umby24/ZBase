@@ -355,25 +355,28 @@ namespace ZBase.Network.Indev
 
         public void Handle(INetworkClient client)
         {
-            //throw new NotImplementedException();
+            var currentLoc = client.ClientPlayer.Entity.Location;
+            currentLoc.SetAsBlockCoords(new Vector3S((short)X, (short)Z, (short)Y));
+
+            client.ClientPlayer.HandleMove(currentLoc);
         }
 
         public void Read(IByteBuffer client)
         {
-            X = (double)client.ReadInt();
-            Y = (double)client.ReadInt();
-            Stance = client.ReadInt();
-            Z = client.ReadInt();
+            X = (double)client.ReadFloat();
+            Y = (double)client.ReadFloat();
+            Stance = client.ReadFloat();
+            Z = client.ReadFloat();
             OnGround = client.ReadByte() > 0;
         }
 
         public void Write(IByteBuffer client)
         {
             client.WriteByte(Id);
-            client.WriteLong((long)X);
-            client.WriteLong((long)Y);
-            client.WriteLong((long)Z);
-            client.WriteLong((long)Stance);
+            client.WriteFloat((long)X);
+            client.WriteFloat((long)Y);
+            client.WriteFloat((long)Z);
+            client.WriteFloat((long)Stance);
             client.WriteByte(OnGround ? (byte)1 : (byte)0);
             client.Purge();
         }
@@ -388,12 +391,16 @@ namespace ZBase.Network.Indev
 
         public void Handle(INetworkClient client)
         {
-           // throw new NotImplementedException();
+            var currentLoc = client.ClientPlayer.Entity.Location;
+            currentLoc.Rotation = (byte)Yaw;
+            currentLoc.Look = (byte)Pitch;
+
+            client.ClientPlayer.HandleMove(currentLoc);
         }
 
         public void Read(IByteBuffer client) {
-            Yaw = (float) client.ReadInt();
-            Pitch = (float) client.ReadInt();
+            Yaw =  client.ReadFloat();
+            Pitch = client.ReadFloat();
             OnGround = client.ReadByte() > 0;
         }
 
@@ -422,17 +429,23 @@ namespace ZBase.Network.Indev
 
         public void Handle(INetworkClient client)
         {
-           // throw new NotImplementedException();
+            var currentLoc = new MinecraftLocation();
+            currentLoc.SetAsBlockCoords(new Vector3S((short)X, (short)Z, (short)Y));
+            currentLoc.Rotation = (byte)Yaw;
+            currentLoc.Look = (byte)Pitch;
+
+            client.ClientPlayer.HandleMove(currentLoc);
+           
         }
 
         public void Read(IByteBuffer client)
         { // -- TODO: Note; This packet may be a different order depending on clientbound or server bound.
-            X = client.ReadInt();
-            Y = client.ReadInt();
-            Z = client.ReadInt();
-            Stance = client.ReadInt();
-            Yaw = (float)client.ReadInt();
-            Pitch = (float)client.ReadInt();
+            X = client.ReadFloat();
+            Y = client.ReadFloat();
+            Z = client.ReadFloat();
+            Stance = client.ReadFloat();
+            Yaw = client.ReadFloat();
+            Pitch = client.ReadFloat();
             OnGround = client.ReadByte() > 0;
         }
 
@@ -468,24 +481,24 @@ namespace ZBase.Network.Indev
 
         public void Read(IByteBuffer client)
         {
-            X = client.ReadLong();
-            Stance = client.ReadLong();
-            Y = client.ReadLong();
-            Z = client.ReadLong();
-            Yaw = (float)client.ReadInt();
-            Pitch = (float)client.ReadInt();
+            X = client.ReadFloat();
+            Y = client.ReadFloat();
+            Stance = client.ReadFloat();
+            Z = client.ReadFloat();
+            Yaw = (float)client.ReadFloat();
+            Pitch = (float)client.ReadFloat();
             OnGround = client.ReadByte() > 0;
         }
 
         public void Write(IByteBuffer client)
         {
             client.WriteByte(Id);
-            client.WriteLong((long)X);
-            client.WriteLong((long)Stance);
-            client.WriteLong((long)Y);
-            client.WriteLong((long)Z);
-            client.WriteInt((int)Yaw);
-            client.WriteInt((int)Pitch);
+            client.WriteFloat((long)X);
+            client.WriteFloat((long)Y);
+            client.WriteFloat((long)Stance);
+            client.WriteFloat((long)Z);
+            client.WriteFloat((int)Yaw);
+            client.WriteFloat((int)Pitch);
             client.WriteByte(OnGround ? (byte)1 : (byte)0);
             client.Purge();
         }
@@ -548,7 +561,7 @@ namespace ZBase.Network.Indev
 
         public void Handle(INetworkClient client)
         {
-            throw new NotImplementedException();
+            client.ClientPlayer.HandleBlockPlace(new Vector3S(X, Z, Y), (byte)ItemID, 1);
         }
 
         public void Read(IByteBuffer client) {

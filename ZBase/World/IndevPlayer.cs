@@ -66,6 +66,24 @@ namespace ZBase.World {
             loginMap.BlockChanged += MapBlockChange; // -- Subscribe to block change events
             loginMap.MapChatSent += HandleChatReceived; // -- sub to map chat.
 
+            // -- Send Spawn Location..
+            var spawnPacket = new SpawnPositionPacket() {
+                X = loginMap.GetSpawn().X,
+                Y = loginMap.GetSpawn().Z,
+                Z = loginMap.GetSpawn().Y
+            };
+
+            _client.SendPacket(spawnPacket);
+
+            var gmPacket = new SetGameMode() {
+                EntityId = Entity.ClientId,
+                GameMode = 1, // -- 1 = creative, 0 = survival..
+                IsOp = 0,
+                Revive = 0
+            };
+
+            _client.SendPacket(gmPacket);
+
             _client.Verified = true; // -- Register the client, announce their arrival, and set them as verified (Can perform actions)
 
             Entity.Spawn(); // -- Spawn this client for everyone (including themselves)

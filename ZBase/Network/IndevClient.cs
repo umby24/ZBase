@@ -165,7 +165,7 @@ namespace ZBase.Network
         public void SendHandshake(bool op, string motd = null) {
             var resp = new LoginRequestPacket {
                 Username = "",
-                ProtocolVersion = 1, // -- Entity ID
+                ProtocolVersion = ClientPlayer.Entity.ClientId,
                 MapSeed = 0,
                 Motd = motd ?? Configuration.Settings.General.Motd,
                 ServerName = Configuration.Settings.General.Name

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ZBase.Common;
 
 namespace ZBase.World {
     public interface IMinecraftPlayer {
@@ -20,5 +18,7 @@ namespace ZBase.World {
         void ChangeMap(HcMap map);
 
         void HandleChatReceived(string message);
+        void HandleBlockPlace(Vector3S location, byte type, byte mode);
+        void HandleMove(MinecraftLocation location);
     }
 }

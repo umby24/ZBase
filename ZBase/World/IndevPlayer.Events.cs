@@ -55,6 +55,21 @@ namespace ZBase.World {
         /// </summary>
         /// <param name="e">E.</param>
         public void SpawnEntity(Entity e) {
+            if (e == Entity) {
+                var posAsBlocks = e.GetBlockCoords();
+                var posPacket = new SetPlayerPositionPacket() {
+                    OnGround = true,
+                    Pitch = e.Location.Look,
+                    Stance = 1,
+                    X = posAsBlocks.X,
+                    Y = posAsBlocks.Z,
+                    Z = posAsBlocks.Y,
+                    Yaw = e.Location.Rotation
+                };
+                _client.SendPacket(posPacket);
+                return;
+            }
+
             IIndevPacket spawn = new SpawnPlayerPacket() {
                 EntityId = (e == Entity ? -1 : (sbyte)e.ClientId),
                 currentItem = e.HeldBlock.Id,

@@ -67,6 +67,36 @@ namespace ZBase.Common {
             }
         }
 
+        public float ReadFloat() {
+            WaitForData(4);
+            lock (_opLocker) {
+                byte[] data = ReadBytes(4);
+                RemoveBytes(4);
+                Array.Reverse(data);
+                return BitConverter.ToSingle(data, 0);
+            }
+        }
+
+        public long ReadLong() {
+            WaitForData(8);
+            lock (_opLocker) {
+                byte[] data = ReadBytes(8);
+                RemoveBytes(8);
+                Array.Reverse(data);
+                return BitConverter.ToInt64(data, 0);
+            }
+        }
+
+        public double ReadDouble() {
+            WaitForData(8);
+            lock (_opLocker) {
+                byte[] data = ReadBytes(8);
+                RemoveBytes(8);
+                Array.Reverse(data);
+                return BitConverter.ToDouble(data, 0);
+            }
+        }
+
         public string ReadString() {
             WaitForData(2);
             short strLen = 0;
@@ -115,6 +145,17 @@ namespace ZBase.Common {
         }
 
         public void WriteInt(int value) {
+            byte[] data = BitConverter.GetBytes(value);
+            Array.Reverse(data);
+            AddBytes(data);
+        }
+        public void WriteFloat(float value) {
+            byte[] data = BitConverter.GetBytes(value);
+            Array.Reverse(data);
+            AddBytes(data);
+        }
+
+        public void WriteDouble(double value) {
             byte[] data = BitConverter.GetBytes(value);
             Array.Reverse(data);
             AddBytes(data);
@@ -211,18 +252,6 @@ namespace ZBase.Common {
             Buffer.BlockCopy(_buffer, length, tempBuff, 0, tempLength);
 
             _buffer = tempBuff;
-        }
-
-        public long ReadLong()
-        {
-            WaitForData(8);
-            lock (_opLocker)
-            {
-                byte[] data = ReadBytes(8);
-                RemoveBytes(8);
-                Array.Reverse(data);
-                return BitConverter.ToInt64(data, 0);
-            }
         }
 
         #endregion

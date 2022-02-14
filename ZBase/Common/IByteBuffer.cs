@@ -8,7 +8,10 @@
         byte ReadByte();
         short ReadShort();
         int ReadInt();
+        float ReadFloat();
+
         long ReadLong();
+        double ReadDouble();
         string ReadString();
         byte[] ReadByteArray();
         byte[] ReadByte(int length);
@@ -16,7 +19,9 @@
         void WriteByte(byte value);
         void WriteShort(short value);
         void WriteInt(int value);
+        void WriteFloat(float value);
         void WriteLong(long value);
+        void WriteDouble(double value);
         void WriteString(string value);
         void Purge();
 

@@ -205,6 +205,22 @@ namespace ZBase.Common {
             throw new NotImplementedException();
         }
 
+        public float ReadFloat() {
+            throw new NotImplementedException();
+        }
+
+        public double ReadDouble() {
+            throw new NotImplementedException();
+        }
+
+        public void WriteFloat(float value) {
+            throw new NotImplementedException();
+        }
+
+        public void WriteDouble(double value) {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }
