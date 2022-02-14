@@ -59,10 +59,7 @@ namespace ZBase.Network {
                 return;
             }
 
-            //if (extend) {
-            //    c.ClientPlayer.ChatBuffer += message;
-            //    return;
-            //}
+
             if (message.Contains("/trychangemap")) {
                 HcMap newMap;
 

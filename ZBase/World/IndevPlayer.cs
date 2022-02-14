@@ -185,6 +185,7 @@ namespace ZBase.World {
             _client.SendHandshake(CurrentRank.ClientOp);
             var loginMapSize = Entity.CurrentMap.GetSize();
             MapSend(Entity.CurrentMap.GetMapBlocks(), new byte[loginMapSize.X * loginMapSize.Y * loginMapSize.Z]);
+
             Entity.CurrentMap.BlockChanged += MapBlockChange; // -- sub to block changes
             Entity.CurrentMap.MapChatSent += HandleChatReceived;
 
@@ -198,7 +199,7 @@ namespace ZBase.World {
         }
 
         public void Kick(string reason, bool hide = false) {
-            throw new NotImplementedException();
+            _client.Kick(reason);
         }
 
         public void SendChat(string message) {

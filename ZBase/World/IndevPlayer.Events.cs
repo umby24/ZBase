@@ -40,11 +40,11 @@ namespace ZBase.World {
 
             IIndevPacket t = new EntityTeleportPacket() {
                 EntityID = entityId,
-                Pitch = (sbyte)entity.Location.Look,
+                Pitch = (sbyte)entity.Location.Rotation,
                 X = entity.Location.X,
                 Z = entity.Location.Y,
                 Y = entity.Location.Z,
-                Yaw = (sbyte)entity.Location.Rotation
+                Yaw = (sbyte)entity.Location.Look
             };
 
             _client.SendPacket(t);
