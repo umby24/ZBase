@@ -264,6 +264,8 @@ namespace ZBase.Common {
     public interface IIndevPacket
     {
         int PacketLength { get; }
+        static byte Id { get; }
+        int GetId();
         void Read(IByteBuffer client);
         void Write(IByteBuffer client);
         void Handle(INetworkClient client);

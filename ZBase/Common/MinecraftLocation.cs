@@ -98,6 +98,15 @@ namespace ZBase.Common {
                 Z = playerCoords.Z
             };
         }
+
+        public void SetAsPlayerCoords(Vector3F playerCoords) {
+            Location = new Vector3S {
+                X = (short)(playerCoords.X * 32),
+                Y = (short)(playerCoords.Y * 32),
+                Z = (short)((playerCoords.Z * 32) + 51)
+            };
+        }
+
         public Vector3S GetAsBlockCoords()
         {
             return new Vector3S

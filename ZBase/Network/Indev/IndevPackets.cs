@@ -8,7 +8,9 @@ namespace ZBase.Network.Indev
     {
         public static byte Id => 0;
         public int PacketLength => 1;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
         }
@@ -33,7 +35,9 @@ namespace ZBase.Network.Indev
         public string Motd { get; set; }
         public string ServerName { get; set; }
         public int PacketLength => 4 + 8;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             if (ProtocolVersion > 9)
@@ -92,7 +96,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x02;
         public string Username { get; set; }
         public int PacketLength => 4 + 4;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             client.SetName(Username);
@@ -122,7 +128,9 @@ namespace ZBase.Network.Indev
     {
         public static byte Id => 0x03;
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -144,7 +152,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x03;
         public string Message { get; set; }
         public int PacketLength => 3;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             Chat.HandleIncoming(client, Message);
@@ -167,7 +177,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x05;
         public long Time { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -193,7 +205,9 @@ namespace ZBase.Network.Indev
         public short ItemID { get; set; }
         public short Metadata { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -225,7 +239,9 @@ namespace ZBase.Network.Indev
         public int Z { get; set; }
 
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -253,16 +269,20 @@ namespace ZBase.Network.Indev
         public int UserID { get; set; }
         public int TargetID { get; set; }
         public bool LeftClick { get; set; }
-        public int PacketLength => throw new NotImplementedException();
-
+        public int PacketLength => 10;
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
-            throw new NotImplementedException();
+           // throw new NotImplementedException();
         }
 
         public void Read(IByteBuffer client)
         {
-            throw new NotImplementedException();
+            UserID = client.ReadInt();
+            TargetID = client.ReadInt();
+            LeftClick = client.ReadByte() > 0;
         }
 
         public void Write(IByteBuffer client)
@@ -279,7 +299,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x08;
         public short Health { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -302,7 +324,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x09;
         public byte Dimension { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -325,7 +349,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x0A;
         public bool OnGround { get; set; }
         public int PacketLength => 2;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             //throw new NotImplementedException();
@@ -346,25 +372,27 @@ namespace ZBase.Network.Indev
     public struct IndevPlayerPositionPacket : IIndevPacket
     {
         public static byte Id => 11;
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
-        public double Stance { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
+        public float Stance { get; set; }
         public bool OnGround { get; set; }
         public int PacketLength => 17;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             var currentLoc = client.ClientPlayer.Entity.Location;
-            currentLoc.SetAsBlockCoords(new Vector3S((short)X, (short)Z, (short)Y));
+            currentLoc.SetAsPlayerCoords(new Vector3F(X, Z, Y));
 
             client.ClientPlayer.HandleMove(currentLoc);
         }
 
         public void Read(IByteBuffer client)
         {
-            X = (double)client.ReadFloat();
-            Y = (double)client.ReadFloat();
+            X = client.ReadFloat();
+            Y = client.ReadFloat();
             Stance = client.ReadFloat();
             Z = client.ReadFloat();
             OnGround = client.ReadByte() > 0;
@@ -389,11 +417,15 @@ namespace ZBase.Network.Indev
         public bool OnGround { get; set; }
         public int PacketLength => 9;
 
+        public int GetId() {
+            return Id;
+        }
+
         public void Handle(INetworkClient client)
         {
             var currentLoc = client.ClientPlayer.Entity.Location;
-            currentLoc.Rotation = (byte)Yaw;
-            currentLoc.Look = (byte)Pitch;
+            currentLoc.Rotation = (byte)Pitch;
+            currentLoc.Look = (byte)Yaw;
 
             client.ClientPlayer.HandleMove(currentLoc);
         }
@@ -418,19 +450,21 @@ namespace ZBase.Network.Indev
     public struct PlayerPositionAndLook : IIndevPacket
     {
         public static byte Id => 13;
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
-        public double Stance { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
+        public float Stance { get; set; }
         public float Yaw {get; set; }
         public float Pitch { get; set; }
         public bool OnGround { get; set; }
         public int PacketLength => 41;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             var currentLoc = new MinecraftLocation();
-            currentLoc.SetAsBlockCoords(new Vector3S((short)X, (short)Z, (short)Y));
+            currentLoc.SetAsPlayerCoords(new Vector3F(X, Z, Y));
             currentLoc.Rotation = (byte)Yaw;
             currentLoc.Look = (byte)Pitch;
 
@@ -452,12 +486,12 @@ namespace ZBase.Network.Indev
         public void Write(IByteBuffer client)
         {
             client.WriteByte(Id);
-            client.WriteLong((long)X);
-            client.WriteLong((long)Y);
-            client.WriteLong((long)Z);
-            client.WriteLong((long)Stance);
-            client.WriteInt((int)Yaw);
-            client.WriteInt((int)Pitch);
+            client.WriteFloat(X);
+            client.WriteFloat(Y);
+            client.WriteFloat(Z);
+            client.WriteFloat(Stance);
+            client.WriteFloat(Yaw);
+            client.WriteFloat(Pitch);
             client.WriteByte(OnGround ? (byte)1 : (byte)0);
             client.Purge();
         }
@@ -473,7 +507,9 @@ namespace ZBase.Network.Indev
         public float Pitch { get; set; }
         public bool OnGround { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -517,12 +553,14 @@ namespace ZBase.Network.Indev
         public sbyte Y { get; set; }
         public int Z { get; set; }
         public sbyte Blockface { get; set; }
-        
-        public int PacketLength => throw new NotImplementedException();
 
+        public int PacketLength => 12;
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void Read(IByteBuffer client) {
@@ -557,8 +595,10 @@ namespace ZBase.Network.Indev
         public short ItemID { get; set; }
         public sbyte? Amount { get; set; }
         public short? Metadata { get; set; }
-        public int PacketLength => throw new NotImplementedException();
-
+        public int PacketLength => 13;
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             client.ClientPlayer.HandleBlockPlace(new Vector3S(X, Z, Y), (byte)ItemID, 1);
@@ -596,11 +636,13 @@ namespace ZBase.Network.Indev
     {
         public static byte Id => 0x10;
         public short Slot { get; set; }
-        public int PacketLength => throw new NotImplementedException();
-
+        public int PacketLength => 3;
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
-            throw new NotImplementedException();
+            // -- set last material :| TODO:
         }
 
         public void Read(IByteBuffer client) {
@@ -623,7 +665,9 @@ namespace ZBase.Network.Indev
         public byte Revive { get; set; }
 
         public int PacketLength => 7;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -653,11 +697,13 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x12;
         public int CurrentItem { get; set; }
         public int ItemId { get; set; }
-        public int PacketLength => 8;
-
+        public int PacketLength => 9;
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void Read(IByteBuffer client)
@@ -711,7 +757,9 @@ namespace ZBase.Network.Indev
         public byte pitch { get; set; }
         public int currentItem { get; set; }
         public int PacketLength => 28;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -749,7 +797,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x15; // 21
         public short Slot { get; set; }
         public int PacketLength => 24;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -773,7 +823,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x16;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -797,7 +849,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x17;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -821,7 +875,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x18;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -845,7 +901,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x19;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -869,7 +927,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x1C;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -893,7 +953,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x1D;
         public int EntityID;
         public int PacketLength => 5;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -917,7 +979,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x1F;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -941,7 +1005,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x20;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -965,7 +1031,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x21;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -994,7 +1062,9 @@ namespace ZBase.Network.Indev
 
         public sbyte Yaw, Pitch;
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1023,7 +1093,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x26;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1071,7 +1143,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x28;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1099,7 +1173,9 @@ namespace ZBase.Network.Indev
         public byte[] MetaData { get; set; }
 
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1138,7 +1214,9 @@ namespace ZBase.Network.Indev
         public int Depth { get; set; }
 
         public int PacketLength => 20;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1169,7 +1247,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x34;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1197,7 +1277,9 @@ namespace ZBase.Network.Indev
         public sbyte BlockID { get; set; }
         public sbyte Metadata { get; set; }
         public int PacketLength => 12;
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1273,7 +1355,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x3D;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1321,7 +1405,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x47;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1345,7 +1431,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x64;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1369,7 +1457,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x65;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1393,7 +1483,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x66;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1417,7 +1509,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x67;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1441,7 +1535,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x68;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1465,7 +1561,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x69;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1489,7 +1587,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x6A;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1513,7 +1613,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0x82;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1561,7 +1663,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0xC8;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();
@@ -1585,7 +1689,9 @@ namespace ZBase.Network.Indev
         public static byte Id => 0xFF;
         public short Slot { get; set; }
         public int PacketLength => throw new NotImplementedException();
-
+        public int GetId() {
+            return Id;
+        }
         public void Handle(INetworkClient client)
         {
             throw new NotImplementedException();

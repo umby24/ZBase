@@ -59,7 +59,7 @@ namespace ZBase.World {
                 CurrentMap = loginMap,
                 PrettyName = CurrentRank.Prefix + Name + CurrentRank.Suffix
             };
-
+            Entity.CurrentMap = loginMap;
             Entity.OnEntityDespawned += DespawnEntity;
             Entity.OnEntitySpawned += SpawnEntity;
             Entity.OtherEntityMoved += SomeoneMoved;

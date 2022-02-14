@@ -35,7 +35,7 @@ namespace ZBase.Network
         private bool _disconnectOnSend;
         private readonly object _fk = new object(); // -- Lock to ensure two packets are not being handled at once
         private readonly string _taskId; // -- The task ID for the timeout for this client.
-        
+        private int lastSent = 0;
 
         public IndevClient(TcpClient sock)
         {
@@ -119,6 +119,7 @@ namespace ZBase.Network
         {
             Shutdown();
             Logger.Log(LogType.Info, $"{Ip} Disconnected");
+            Logger.Log(LogType.Debug, $"Last packet sent {lastSent}");
         }
 
         /// <summary>
@@ -146,6 +147,7 @@ namespace ZBase.Network
         {
             lock (SendBuffer)
             {
+                lastSent = packet.GetId();
                 packet.Write(SendBuffer);
             }
         }
@@ -207,6 +209,10 @@ namespace ZBase.Network
                 {11, new IndevPlayerPositionPacket() },
                 {12, new PlayerLookPacket() },
                 {13, new PlayerPositionAndLook() },
+                {14, new PlayerDiggingPacket() },
+                {15, new PlayerBlockPlacementPacket() },
+                {16, new ChangeHeldItemPacket() },
+                {18, new SetCreativeInventory() },
                 {0xFF, new DisconnectPacket() }
             };
         }

@@ -86,7 +86,7 @@ namespace ZBase.Network {
                         roClient.Handle();
                     }
                     catch (Exception ex) {
-                        Console.WriteLine("ASDASDASDASD");
+                        Console.WriteLine($"Error packet handling: {ex.Message} at {ex.StackTrace.ToString()}");
                     }
                     
                 }
