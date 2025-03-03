@@ -56,7 +56,7 @@ namespace ZBase.Common {
 				new Rank {
 					Name = "Owner",
 					Prefix = "&4",
-					Value = 65535
+					Value = 1000
 				}
 			};
 
