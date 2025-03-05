@@ -183,7 +183,10 @@ namespace ZBase.Network {
                 {5, new SetBlock()},
                 {8, new PlayerTeleport() },
                 {13, new Message() },
-                {14, new Disconnect() }
+                {14, new Disconnect() },
+                {16, new ExtInfo() },
+                {17, new ExtEntry() },
+                {19, new CustomBlockSupportLevel() }
             };
         }
 
@@ -207,7 +210,7 @@ namespace ZBase.Network {
                 IPacket packet;
                 
                 if (!Verified) { // -- If this client is unverified, the only packets they're allowed to send are CPE negotiation, and handshake.
-                    if (opcode != Handshake.Id) {
+                    if (opcode != Handshake.Id && opcode != ExtInfo.Id && opcode != ExtEntry.Id && opcode != CustomBlockSupportLevel.Id) {
                         Logger.Log(LogType.Warning, $"Disconnecting {Ip}: Unexpected handshake opcode ({opcode})");
                         Shutdown();
                         return;
@@ -217,6 +220,13 @@ namespace ZBase.Network {
                 if (!_packets.TryGetValue(opcode, out packet) || (opcode == Handshake.Id && Verified)) {
 					Logger.Log(LogType.Warning, $"Received invalid packet from {Ip} ({opcode}), disconnecting.");
 					Kick ("Invalid Opcode Received");
+                    return;
+                }
+
+                if (opcode > Disconnect.Id && !ClientPlayer.CpeClient)
+                {
+                    Logger.Log(LogType.Warning, $"Received CPE packet from non-CPE Client! {Ip} ({opcode}), disconnecting.");
+                    Kick("Invalid Opcode Received");
                     return;
                 }
 

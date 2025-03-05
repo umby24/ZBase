@@ -38,7 +38,7 @@ namespace ZBase {
     public static class Main {
         public static bool Running;
         private static Server _server;
-
+        public static float Version = 1.00f;
         /// <summary>
         /// Starts the Hypercube server.
         /// </summary>

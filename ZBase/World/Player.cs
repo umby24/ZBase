@@ -14,7 +14,12 @@ namespace ZBase.World {
         public DateTime MutedUntil { get; set; }
         public BuildState CurrentState { get; set; }
         public string ChatBuffer { get; set; }
-        
+        public bool CpeClient { get; set; }
+        public Dictionary<string, int> Extensions { get; set; } 
+        public string AppName { get; set; }
+        public int ExtensionCount { get; set; }
+        public int CustomBlockSupportLevel { get; set; }
+
         public Entity Entity;
         
         private readonly Client _client;
@@ -27,6 +32,11 @@ namespace ZBase.World {
             _client = client;
             CurrentState = new BuildState();
             ChatBuffer = "";
+        }
+
+        public void CpeHandshake()
+        {
+
         }
 
         public void Login() {

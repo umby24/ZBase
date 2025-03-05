@@ -14,5 +14,7 @@ namespace ZBase.Common {
         public const string InvalidNumArgumentsMessage = "§EInvalid number of arguments.";
         public const string AddPortalBuildModeName = "AddPortal";
         public const string DeletePortalBuildModeName = "DeletePortal";
+        public const string ClickDistanceExt = "ClickDistance";
+        public const string CustomBlocksExt = "CustomBlocks";
     }
 }

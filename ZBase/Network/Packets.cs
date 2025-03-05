@@ -1,4 +1,5 @@
-﻿using ZBase.Common;
+﻿using System.Collections.Generic;
+using ZBase.Common;
 using ZBase.World;
 
 namespace ZBase.Network {
@@ -45,10 +46,31 @@ namespace ZBase.Network {
                 return;
             }
 
+            if (Text.StringMatches(Name) || string.IsNullOrWhiteSpace(Name)) {
+                // -- Check for invalid characters
+                c.Kick("Invalid characters in name");
+                return;
+            }
+
+            if (Configuration.Settings.Network.MaxPlayers <= Server.Clients.Count)
+            {
+                c.Kick("Server is full");
+                return;
+            }
+
             c.ClientPlayer = new Player(c) {
                 Name = Name,
             };
             
+            if (Usertype == 66)
+            { // -- CPE Client.
+                Logger.Log(LogType.Debug, Name + " is a CPE client.");
+                c.ClientPlayer.CpeClient = true;
+                CPE.CPEHandshake(c);
+                return;
+            }
+
+            c.ClientPlayer.CpeClient = false;
             c.ClientPlayer.Login();
         }
     }
@@ -430,6 +452,127 @@ namespace ZBase.Network {
 
         public void Handle(Client c) {
 
+        }
+    }
+    #endregion
+    #region CPE
+    public struct ExtInfo : IPacket
+    {
+        public static byte Id => 16;
+        public int PacketLength => 67;
+        public string AppName { get; set; } 
+        public short ExtensionCount { get; set; }
+
+        public void Read(ByteBuffer buf)
+        {
+            AppName = buf.ReadString();
+            ExtensionCount = buf.ReadShort();
+        }
+
+        public void Write(ByteBuffer buf)
+        {
+            buf.WriteByte(Id);
+            buf.WriteString(AppName);
+            buf.WriteShort(ExtensionCount);
+            buf.Purge();
+        }
+
+        public void Handle(Client c)
+        {
+            Logger.Log(LogType.Info, $"Client {c.Ip} is running {AppName} with {ExtensionCount} extensions.");
+            c.ClientPlayer.ExtensionCount = ExtensionCount;
+            c.ClientPlayer.AppName = AppName;
+
+            if (c.ClientPlayer.ExtensionCount == 0)
+            {
+                CPE.CPEPackets(c);
+            }
+        }
+    }
+
+    public struct ExtEntry : IPacket
+    {
+        public static byte Id => 17;
+        public int PacketLength => 69;
+        public string ExtName { get; set; }
+        public int Version { get; set; }
+
+
+        public void Read(ByteBuffer buf)
+        {
+            ExtName = buf.ReadString();
+            Version = buf.ReadInt();
+        }
+
+        public void Write(ByteBuffer buf)
+        {
+            buf.WriteByte(Id);
+            buf.WriteString(ExtName);
+            buf.WriteInt(Version);
+            buf.Purge();
+        }
+
+        public void Handle(Client c)
+        {
+            if (c.ClientPlayer.Extensions == null)
+            {
+                c.ClientPlayer.Extensions = new Dictionary<string, int>();
+            }
+
+            c.ClientPlayer.Extensions.Add(ExtName, Version);
+            if (c.ClientPlayer.Extensions.Count == c.ClientPlayer.ExtensionCount)
+            {
+                CPE.CPEPackets(c);
+            }
+        }
+    }
+    public struct SetClickDistance : IPacket
+    {
+        public static byte Id => 18;
+        public int PacketLength => 3;
+        public short Distance { get; set; }
+
+        public void Read(ByteBuffer buf)
+        {
+            Distance = buf.ReadShort();
+        }
+
+        public void Write(ByteBuffer buf)
+        {
+            buf.WriteByte(Id);
+            buf.WriteShort(Distance);
+            buf.Purge();
+        }
+
+        public void Handle(Client c)
+        {
+             // -- Clientbound only
+        }
+    }
+
+    public struct CustomBlockSupportLevel : IPacket
+    {
+        public static byte Id => 19;
+        public int PacketLength => 2;
+        public byte SupportLevel { get; set; }
+
+
+        public void Read(ByteBuffer buf)
+        {
+            SupportLevel = buf.ReadByte();
+        }
+
+        public void Write(ByteBuffer buf)
+        {
+            buf.WriteByte(Id);
+            buf.WriteByte(SupportLevel);
+            buf.Purge();
+        }
+
+        public void Handle(Client c)
+        {
+            c.ClientPlayer.CustomBlockSupportLevel = SupportLevel;
+            c.ClientPlayer.Login();
         }
     }
     #endregion
