@@ -15,7 +15,18 @@ namespace ZBase.World {
         public static HcMap DefaultMap { get; set; } // -- static main map
         public static Dictionary<string, HcMap> Maps { get; set; } // -- static list of all loaded maps.
         public Entity[] Entities => GetEntities();
-
+        public string Name
+        {
+            get
+            {
+                return MapProvider.MapName;
+            }
+            set
+            {
+                MapProvider.MapName = value;
+            }
+        }
+        
         private Entity[] GetEntities() {
             if (_entitiesCurrent)
                 return _entityCache;
@@ -31,7 +42,7 @@ namespace ZBase.World {
             return _entityCache;
         }
 
-        internal string Filename; // -- this maps physical location
+        public string Filename; // -- this maps physical location
         internal IMapProvider MapProvider;
 
         private Stack<byte> _entityStack; // -- for entity IDs
